@@ -1,0 +1,77 @@
+global:
+  timezone: "UTC"
+  db_path: "~/git/kvasir_marketing/social_scanner/data/state.db"
+  output_html: "~/git/kvasir_marketing/social_scanner/data/rendered/index.html"
+  max_items_per_subreddit: 50
+  max_claude_batch_size: 20
+  min_score: 10
+  min_comments: 5
+  item_age_limit_hours: 72
+  claude_model: "claude-sonnet-4-6"
+  claude_max_tokens: 4096
+  reddit_request_delay_seconds: 1.0
+
+subreddits:
+  # Books / reading
+  - name: books
+    enabled: true
+  - name: bookclub
+    enabled: true
+  - name: suggestmeabook
+    enabled: true
+  - name: classics
+    enabled: true
+  - name: literature
+    enabled: true
+  - name: 52book
+    enabled: true
+  # AI / tech
+  - name: ChatGPT
+    enabled: true
+  - name: artificial
+    enabled: true
+  - name: SideProject
+    enabled: true
+  # Education / teaching
+  - name: Teachers
+    enabled: true
+  - name: homeschool
+    enabled: true
+  # Games / quiz
+  - name: trivia
+    enabled: true
+  - name: wordgames
+    enabled: true
+
+include_keywords:
+  - ai book
+  - book quiz
+  - literature quiz
+  - book club
+  - reading discussion
+  - discussion questions
+  - classics discussion
+  - ai for teachers
+  - ai classroom
+  - trivia game
+  - word game
+  - character chat
+  - ai reading
+  - interactive learning
+  - book recommendations
+  - book challenge
+  - reading app
+  - ai tools
+  - book summary
+  - what should i read
+  - how to learn
+  - recommend
+  - quiz
+  - literary
+
+exclude_keywords:
+  - porn
+  - nsfw
+  - onlyfans
+  - leaked
+  - piracy

@@ -1,0 +1,427 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Quizly Social Scanner — {{ generated_at }}</title>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --bg: #f5f6fa;
+      --surface: #ffffff;
+      --border: #e2e5ef;
+      --text: #1a1d2e;
+      --muted: #6b7280;
+      --accent: #7c3aed;
+      --accent-soft: #f5f3ff;
+      --accent-text: #5b21b6;
+      --green: #16a34a;
+      --green-soft: #f0fdf4;
+      --amber: #b45309;
+      --amber-soft: #fffbeb;
+      --red: #dc2626;
+      --red-soft: #fef2f2;
+      --tag-bg: #f1f5f9;
+      --tag-text: #475569;
+      --radius: 10px;
+      --shadow: 0 1px 4px rgba(0,0,0,.07), 0 4px 12px rgba(0,0,0,.05);
+    }
+
+    body {
+      font-family: system-ui, -apple-system, "Segoe UI", sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      line-height: 1.6;
+      min-height: 100vh;
+    }
+
+    .wrapper { max-width: 1200px; margin: 0 auto; padding: 0 1.5rem 4rem; }
+
+    header {
+      background: var(--surface);
+      border-bottom: 1px solid var(--border);
+      padding: 0.9rem 1.5rem;
+      margin-bottom: 2rem;
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+      flex-wrap: wrap;
+      position: sticky;
+      top: 0;
+      z-index: 100;
+    }
+
+    header h1 { font-size: 1.1rem; font-weight: 700; color: var(--accent-text); }
+    header .meta { font-size: 0.8rem; color: var(--muted); margin-left: auto; }
+
+    nav.tabs {
+      display: flex; gap: 0.5rem; flex-wrap: wrap;
+      margin-bottom: 1.5rem;
+    }
+
+    nav.tabs a {
+      padding: 0.4rem 0.9rem;
+      border-radius: 20px;
+      border: 1px solid var(--border);
+      background: var(--surface);
+      color: var(--muted);
+      text-decoration: none;
+      font-size: 0.82rem;
+      font-weight: 500;
+      transition: all .15s;
+    }
+    nav.tabs a:hover, nav.tabs a.active {
+      background: var(--accent);
+      color: #fff;
+      border-color: var(--accent);
+    }
+
+    section { margin-bottom: 3rem; }
+
+    h2 {
+      font-size: 1rem;
+      font-weight: 700;
+      color: var(--text);
+      margin-bottom: 1rem;
+      padding-bottom: 0.4rem;
+      border-bottom: 2px solid var(--accent);
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+
+    h2 .count {
+      background: var(--accent-soft);
+      color: var(--accent-text);
+      border-radius: 12px;
+      font-size: 0.75rem;
+      padding: 0.1rem 0.5rem;
+      font-weight: 600;
+    }
+
+    .cards { display: grid; grid-template-columns: repeat(auto-fill, minmax(380px, 1fr)); gap: 1rem; }
+
+    .card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 1.1rem 1.2rem;
+      box-shadow: var(--shadow);
+      display: flex;
+      flex-direction: column;
+      gap: 0.6rem;
+    }
+
+    .card.risk-high { border-left: 3px solid var(--red); }
+    .card.risk-low  { border-left: 3px solid var(--green); }
+
+    .card-header { display: flex; align-items: flex-start; gap: 0.5rem; flex-wrap: wrap; }
+
+    .card-title {
+      font-size: 0.92rem;
+      font-weight: 600;
+      color: var(--text);
+      flex: 1;
+      min-width: 0;
+    }
+    .card-title a { color: inherit; text-decoration: none; }
+    .card-title a:hover { text-decoration: underline; color: var(--accent); }
+
+    .badges { display: flex; gap: 0.3rem; flex-wrap: wrap; align-items: center; }
+
+    .badge {
+      display: inline-flex; align-items: center;
+      padding: 0.15rem 0.5rem;
+      border-radius: 12px;
+      font-size: 0.7rem;
+      font-weight: 600;
+      white-space: nowrap;
+    }
+
+    .badge-reddit  { background: #ff4500; color: #fff; }
+    .badge-sub     { background: var(--tag-bg); color: var(--tag-text); }
+    .badge-skip    { background: #f1f5f9; color: #64748b; }
+    .badge-comment { background: var(--green-soft); color: var(--green); }
+    .badge-organic { background: var(--accent-soft); color: var(--accent-text); }
+    .badge-paid    { background: var(--amber-soft); color: var(--amber); }
+    .badge-monitor { background: #e0f2fe; color: #0369a1; }
+    .badge-research{ background: #f0fdf4; color: #065f46; }
+    .badge-risk-low  { background: var(--green-soft); color: var(--green); }
+    .badge-risk-med  { background: var(--amber-soft); color: var(--amber); }
+    .badge-risk-high { background: var(--red-soft); color: var(--red); }
+
+    .scores {
+      display: flex; gap: 0.6rem; flex-wrap: wrap;
+      font-size: 0.75rem; color: var(--muted);
+    }
+    .scores span { display: flex; align-items: center; gap: 0.2rem; }
+    .score-num { font-weight: 600; color: var(--text); }
+
+    .rationale {
+      font-size: 0.82rem;
+      color: var(--muted);
+      font-style: italic;
+    }
+
+    .copy-section { display: flex; flex-direction: column; gap: 0.5rem; margin-top: 0.3rem; }
+
+    .copy-block {
+      background: var(--bg);
+      border: 1px solid var(--border);
+      border-radius: 6px;
+      padding: 0.6rem 0.8rem;
+      font-size: 0.8rem;
+      line-height: 1.5;
+      color: var(--text);
+      position: relative;
+    }
+
+    .copy-label {
+      font-size: 0.68rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: .04em;
+      color: var(--muted);
+      margin-bottom: 0.25rem;
+    }
+
+    .copy-text { white-space: pre-wrap; word-break: break-word; }
+
+    .copy-btn {
+      position: absolute; top: 0.4rem; right: 0.4rem;
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 4px;
+      padding: 0.15rem 0.4rem;
+      font-size: 0.68rem;
+      cursor: pointer;
+      color: var(--muted);
+      transition: all .12s;
+    }
+    .copy-btn:hover { background: var(--accent); color: #fff; border-color: var(--accent); }
+    .copy-btn.copied { background: var(--green); color: #fff; border-color: var(--green); }
+
+    .mod-notes {
+      font-size: 0.75rem;
+      color: var(--red);
+      background: var(--red-soft);
+      border-radius: 5px;
+      padding: 0.3rem 0.6rem;
+    }
+
+    .action-note {
+      font-size: 0.78rem;
+      color: var(--accent-text);
+      background: var(--accent-soft);
+      border-radius: 5px;
+      padding: 0.3rem 0.6rem;
+      font-weight: 500;
+    }
+
+    .card-footer {
+      display: flex; gap: 0.5rem; flex-wrap: wrap;
+      align-items: center;
+      font-size: 0.75rem;
+      color: var(--muted);
+      border-top: 1px solid var(--border);
+      padding-top: 0.5rem;
+      margin-top: 0.2rem;
+    }
+    .card-footer a { color: var(--accent-text); text-decoration: none; }
+    .card-footer a:hover { text-decoration: underline; }
+
+    .empty { color: var(--muted); font-style: italic; font-size: 0.88rem; padding: 1rem 0; }
+
+    .sub-group { margin-bottom: 2rem; }
+    .sub-group h3 {
+      font-size: 0.88rem;
+      font-weight: 700;
+      color: var(--muted);
+      margin-bottom: 0.7rem;
+      display: flex; align-items: center; gap: 0.4rem;
+    }
+
+    @media (max-width: 640px) {
+      .cards { grid-template-columns: 1fr; }
+    }
+  </style>
+</head>
+<body>
+
+{% macro render_card(opp) %}
+{% set risk = opp.self_promo_risk_score or 0 %}
+{% set risk_class = 'risk-high' if risk >= 70 else ('risk-low' if risk < 30 else '') %}
+{% set type = opp.opportunity_type or 'skip' %}
+{% set type_badge = {
+  'comment_opportunity': 'badge-comment',
+  'organic_post_opportunity': 'badge-organic',
+  'paid_ad_target': 'badge-paid',
+  'monitor': 'badge-monitor',
+  'research_only': 'badge-research',
+  'skip': 'badge-skip'
+}.get(type, 'badge-skip') %}
+{% set risk_badge = 'badge-risk-high' if risk >= 70 else ('badge-risk-med' if risk >= 40 else 'badge-risk-low') %}
+{% set risk_label = 'High risk' if risk >= 70 else ('Med risk' if risk >= 40 else 'Low risk') %}
+
+<article class="card {{ risk_class }}">
+  <div class="card-header">
+    <div class="card-title">
+      <a href="{{ opp.url }}" target="_blank" rel="noopener">{{ opp.title }}</a>
+    </div>
+  </div>
+  <div class="badges">
+    <span class="badge badge-reddit">Reddit</span>
+    <span class="badge badge-sub">r/{{ opp.subreddit }}</span>
+    <span class="badge {{ type_badge }}">{{ type | replace('_', ' ') }}</span>
+    <span class="badge {{ risk_badge }}">{{ risk_label }}</span>
+    {% if opp.audience_angle and opp.audience_angle != 'generic' %}
+    <span class="badge badge-sub">{{ opp.audience_angle | replace('_', ' ') }}</span>
+    {% endif %}
+  </div>
+  <div class="scores">
+    <span>&#8593; <span class="score-num">{{ opp.score }}</span></span>
+    <span>&#128172; <span class="score-num">{{ opp.num_comments }}</span></span>
+    <span>Priority <span class="score-num">{{ opp.priority_score }}</span>/100</span>
+    <span>Relevance <span class="score-num">{{ opp.relevance_score }}</span>/100</span>
+    <span>Risk <span class="score-num">{{ risk }}</span>/100</span>
+  </div>
+  {% if opp.rationale %}
+  <div class="rationale">{{ opp.rationale }}</div>
+  {% endif %}
+  {% if opp.recommended_action %}
+  <div class="action-note">&#8594; {{ opp.recommended_action }}</div>
+  {% endif %}
+
+  <div class="copy-section">
+    {% if opp.comment_reply_text %}
+    <div class="copy-block">
+      <div class="copy-label">Comment reply</div>
+      <div class="copy-text">{{ opp.comment_reply_text }}</div>
+      <button class="copy-btn" title="Copy to clipboard">Copy</button>
+    </div>
+    {% endif %}
+    {% if opp.organic_post_text %}
+    <div class="copy-block">
+      <div class="copy-label">Organic post</div>
+      <div class="copy-text">{{ opp.organic_post_text }}</div>
+      <button class="copy-btn" title="Copy to clipboard">Copy</button>
+    </div>
+    {% endif %}
+    {% if opp.ad_text %}
+    <div class="copy-block">
+      <div class="copy-label">Ad copy</div>
+      <div class="copy-text">{{ opp.ad_text }}</div>
+      <button class="copy-btn" title="Copy to clipboard">Copy</button>
+    </div>
+    {% endif %}
+  </div>
+
+  {% if opp.moderation_notes %}
+  <div class="mod-notes">&#9888; {{ opp.moderation_notes }}</div>
+  {% endif %}
+
+  <div class="card-footer">
+    <span>{{ opp.created_at | fmt_date }}</span>
+    <a href="{{ opp.url }}" target="_blank" rel="noopener">View thread &#8594;</a>
+  </div>
+</article>
+{% endmacro %}
+
+  <header>
+    <h1>Quizly Social Scanner</h1>
+    <span class="meta">Generated {{ generated_at }} &bull; {{ total_count }} opportunities</span>
+  </header>
+
+  <div class="wrapper">
+    <nav class="tabs">
+      <a href="#top" class="active">Top Picks</a>
+      <a href="#comments">Comments ({{ comment_opps|length }})</a>
+      <a href="#paid">Paid Targets ({{ paid_targets|length }})</a>
+      <a href="#by-sub">By Subreddit</a>
+      <a href="#high-risk">High Risk ({{ high_risk|length }})</a>
+    </nav>
+
+    <section id="top">
+      <h2>Top Opportunities <span class="count">{{ top_opps|length }}</span></h2>
+      {% if top_opps %}
+      <div class="cards">
+        {% for opp in top_opps %}{{ render_card(opp) }}{% endfor %}
+      </div>
+      {% else %}
+      <p class="empty">No opportunities yet. Run the pipeline first.</p>
+      {% endif %}
+    </section>
+
+    <section id="comments">
+      <h2>Comment Opportunities <span class="count">{{ comment_opps|length }}</span></h2>
+      {% if comment_opps %}
+      <div class="cards">
+        {% for opp in comment_opps %}{{ render_card(opp) }}{% endfor %}
+      </div>
+      {% else %}
+      <p class="empty">No comment opportunities found.</p>
+      {% endif %}
+    </section>
+
+    <section id="paid">
+      <h2>Paid Ad Targets <span class="count">{{ paid_targets|length }}</span></h2>
+      {% if paid_targets %}
+      <div class="cards">
+        {% for opp in paid_targets %}{{ render_card(opp) }}{% endfor %}
+      </div>
+      {% else %}
+      <p class="empty">No paid ad targets identified.</p>
+      {% endif %}
+    </section>
+
+    <section id="by-sub">
+      <h2>By Subreddit</h2>
+      {% for sub, opps in by_subreddit.items() %}
+      <div class="sub-group">
+        <h3>r/{{ sub }} <span class="badge badge-sub">{{ opps|length }}</span></h3>
+        <div class="cards">
+          {% for opp in opps[:10] %}{{ render_card(opp) }}{% endfor %}
+        </div>
+      </div>
+      {% else %}
+      <p class="empty">No subreddit data available.</p>
+      {% endfor %}
+    </section>
+
+    <section id="high-risk">
+      <h2>High Risk — Do Not Post <span class="count">{{ high_risk|length }}</span></h2>
+      {% if high_risk %}
+      <div class="cards">
+        {% for opp in high_risk %}{{ render_card(opp) }}{% endfor %}
+      </div>
+      {% else %}
+      <p class="empty">No high-risk items flagged.</p>
+      {% endif %}
+    </section>
+
+  </div>
+
+  <script>
+    const API_BASE = "{{ api_base }}";
+
+    document.querySelectorAll('.copy-btn').forEach(btn => {
+      btn.addEventListener('click', () => {
+        const text = btn.closest('.copy-block').querySelector('.copy-text').textContent;
+        navigator.clipboard.writeText(text).then(() => {
+          btn.textContent = 'Copied!';
+          btn.classList.add('copied');
+          setTimeout(() => { btn.textContent = 'Copy'; btn.classList.remove('copied'); }, 2000);
+        });
+      });
+    });
+
+    document.querySelectorAll('nav.tabs a').forEach(link => {
+      link.addEventListener('click', function() {
+        document.querySelectorAll('nav.tabs a').forEach(l => l.classList.remove('active'));
+        this.classList.add('active');
+      });
+    });
+  </script>
+</body>
+</html>

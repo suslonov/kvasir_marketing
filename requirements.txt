@@ -1,0 +1,7 @@
+anthropic
+httpx
+jinja2
+pydantic
+PyYAML
+python-dotenv
+pytest
