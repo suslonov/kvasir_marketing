@@ -1,0 +1,482 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Kvasir / Quizly — Technical Google SEO Plan (Contests + Chats)</title>
+  <style>
+    body { font-family: system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif; line-height: 1.5; margin: 24px; max-width: 1100px; }
+    nav a { margin-right: 10px; }
+    h2 { margin-top: 28px; color: #1e40af; }
+    h3 { color: #374151; margin-top: 18px; }
+    .card { border: 1px solid #e5e7eb; border-radius: 12px; padding: 14px 16px; margin-top: 14px; background: #fafafa; }
+    .critical { background: linear-gradient(135deg, #fef3c7, #fde68a); border: 2px solid #f59e0b; border-radius: 12px; padding: 16px; margin-top: 14px; }
+    .indexed { background: #d1fae5; border: 1px solid #34d399; border-radius: 12px; padding: 14px 16px; margin-top: 14px; }
+    code { background: #f3f4f6; padding: 2px 6px; border-radius: 4px; font-size: 0.9em; }
+    pre { background: #1f2937; color: #f3f4f6; padding: 14px 16px; border-radius: 10px; overflow: auto; font-size: 0.85em; }
+    table { border-collapse: collapse; width: 100%; margin-top: 12px; }
+    th, td { border: 1px solid #e5e7eb; padding: 10px; text-align: left; vertical-align: top; }
+    th { background: #f9fafb; font-weight: 600; }
+    .url-list { background: #eff6ff; border: 1px solid #93c5fd; border-radius: 8px; padding: 12px; margin: 10px 0; font-family: monospace; font-size: 0.9em; }
+    .status-ok { color: #059669; font-weight: 600; }
+    .status-pending { color: #d97706; font-weight: 600; }
+  </style>
+</head>
+<body>
+  <nav>
+    <a href="index.html">Index</a>
+    <a href="seo_google.html">Back: Google/SEO (high-level)</a>
+    <a href="seo_advanced.html">Advanced SEO</a>
+  </nav>
+
+  <h1>Technical Google SEO Plan: Quizly.pub Indexing</h1>
+
+  <!-- ═══════════════════════════════════════════════════════════════════ -->
+  <h2>1. Domain Strategy</h2>
+  <!-- ═══════════════════════════════════════════════════════════════════ -->
+
+  <div class="card">
+    <h3>Domains (per <code>marketing/domains.md</code>)</h3>
+    <ul>
+      <li><b>kvasir.pub</b> — main platform domain (full feature set)</li>
+      <li><b>quizly.pub</b> — focused domain for AI games/chat promotion (SEO-optimized landing)</li>
+    </ul>
+    <p><b>Mirror rule:</b> <code>src/html/quizly.pub</code> is a read-only mirror of kvasir.pub; do not edit <i>except</i> for <code>robots.txt</code> and sitemap files.</p>
+  </div>
+
+  <!-- ═══════════════════════════════════════════════════════════════════ -->
+  <h2>2. URLs to Index (Current)</h2>
+  <!-- ═══════════════════════════════════════════════════════════════════ -->
+
+  <div class="indexed">
+    <h3>✅ Quizly.pub URLs in Sitemap</h3>
+    <p>These URLs are configured for Google indexing via <code>sitemap.xml</code>:</p>
+    
+    <h4>Static Pages (<code>sitemap-static.xml</code>)</h4>
+    <div class="url-list">
+      https://quizly.pub/<br>
+      https://quizly.pub/contests<br>
+      https://quizly.pub/brief<br>
+      https://quizly.pub/deck<br>
+      https://quizly.pub/echo<br>
+      https://quizly.pub/about<br>
+      https://quizly.pub/legal<br>
+      https://quizly.pub/legal?rules=2<br>
+      https://quizly.pub/legal?rules=3
+    </div>
+
+    <h4>Contest Pages (<code>sitemap-contests.xml</code>)</h4>
+    <div class="url-list">
+      https://quizly.pub/contest?id=1<br>
+      https://quizly.pub/contest?id=2<br>
+      https://quizly.pub/contest?id=3
+    </div>
+
+    <h4>Echo/Chat Pages (<code>sitemap-echoes.xml</code>)</h4>
+    <p>Auto-generated for public chats via <code>scripts/seo/generate_sitemaps.py</code></p>
+  </div>
+
+  <div class="card">
+    <h3>Page Purpose & SEO Value</h3>
+    <table>
+      <tr>
+        <th>URL</th>
+        <th>Content</th>
+        <th>Target Keywords</th>
+        <th>Priority</th>
+      </tr>
+      <tr>
+        <td><code>/</code></td>
+        <td>Homepage / echoes listing</td>
+        <td>AI chat games, interactive quizzes</td>
+        <td>1.0</td>
+      </tr>
+      <tr>
+        <td><code>/contests</code></td>
+        <td>Contests listing page - all active AI chat contests</td>
+        <td>AI contests, chat competitions, prompt crafting</td>
+        <td>0.9</td>
+      </tr>
+      <tr>
+        <td><code>/brief</code></td>
+        <td>User-oriented landing page</td>
+        <td>AI chat games, play AI games</td>
+        <td>0.9</td>
+      </tr>
+      <tr>
+        <td><code>/deck</code></td>
+        <td>Pitch deck with AI game demos: Turing Test, Multi-step games, RAG-enhanced chats</td>
+        <td>AI games, hybrid Turing test, LLM games</td>
+        <td>0.8</td>
+      </tr>
+      <tr>
+        <td><code>/contest?id=1</code></td>
+        <td>Contest page with chat entries</td>
+        <td>AI chat contest, interactive stories</td>
+        <td>0.8</td>
+      </tr>
+      <tr>
+        <td><code>/contest?id=2</code></td>
+        <td>Contest page with chat entries</td>
+        <td>AI chat contest, quiz games</td>
+        <td>0.8</td>
+      </tr>
+      <tr>
+        <td><code>/contest?id=3</code></td>
+        <td>Contest page with chat entries</td>
+        <td>AI chat contest, creative games</td>
+        <td>0.8</td>
+      </tr>
+      <tr>
+        <td><code>/legal?rules=2</code></td>
+        <td>Contest rules / terms</td>
+        <td>—</td>
+        <td>0.5</td>
+      </tr>
+      <tr>
+        <td><code>/legal?rules=3</code></td>
+        <td>Platform guidelines</td>
+        <td>—</td>
+        <td>0.5</td>
+      </tr>
+    </table>
+  </div>
+
+  <!-- ═══════════════════════════════════════════════════════════════════ -->
+  <h2>3. Sitemap Structure</h2>
+  <!-- ═══════════════════════════════════════════════════════════════════ -->
+
+  <div class="card">
+    <h3>Sitemap Index (<code>sitemap.xml</code>)</h3>
+    <pre>&lt;sitemapindex&gt;
+  &lt;sitemap&gt;&lt;loc&gt;https://quizly.pub/sitemap-static.xml&lt;/loc&gt;&lt;/sitemap&gt;
+  &lt;sitemap&gt;&lt;loc&gt;https://quizly.pub/sitemap-contests.xml&lt;/loc&gt;&lt;/sitemap&gt;
+  &lt;sitemap&gt;&lt;loc&gt;https://quizly.pub/sitemap-echoes.xml&lt;/loc&gt;&lt;/sitemap&gt;
+&lt;/sitemapindex&gt;</pre>
+    
+    <h4>File Locations</h4>
+    <ul>
+      <li><code>src/html/quizly.pub/sitemap.xml</code> — index file</li>
+      <li><code>src/html/quizly.pub/sitemap-static.xml</code> — static pages (homepage, deck, legal)</li>
+      <li><code>src/html/quizly.pub/sitemap-contests.xml</code> — contest pages</li>
+      <li><code>src/html/quizly.pub/sitemap-echoes.xml</code> — individual chat/echo pages</li>
+    </ul>
+  </div>
+
+  <!-- ═══════════════════════════════════════════════════════════════════ -->
+  <h2>4. Critical SEO Requirements for Indexing</h2>
+  <!-- ═══════════════════════════════════════════════════════════════════ -->
+
+  <div class="critical">
+    <h3>⚠️ Must-Have for Google to Index</h3>
+    <ol>
+      <li><b>200 OK response:</b> Pages must return HTTP 200 without auth redirects</li>
+      <li><b>Crawlable content:</b> Key content must be in initial HTML or rendered quickly by JS</li>
+      <li><b>Unique titles + descriptions:</b> Each page needs distinct <code>&lt;title&gt;</code> and <code>&lt;meta description&gt;</code></li>
+      <li><b>Canonical URLs:</b> Set <code>&lt;link rel="canonical"&gt;</code> to prevent duplicate indexing</li>
+      <li><b>Internal links:</b> Pages must be reachable via HTML links from other indexed pages</li>
+      <li><b>No robots block:</b> Ensure <code>robots.txt</code> allows crawling and pages don't have <code>noindex</code></li>
+    </ol>
+  </div>
+
+  <div class="card">
+    <h3>robots.txt Configuration</h3>
+    <pre>User-agent: *
+Allow: /
+
+# Block editor/admin/private areas
+Disallow: /admin
+Disallow: /profile
+Disallow: /creator
+Disallow: /echo-edit
+Disallow: /echo-contest
+Disallow: /course-edit
+...
+
+Sitemap: https://quizly.pub/sitemap.xml</pre>
+  </div>
+
+  <!-- ═══════════════════════════════════════════════════════════════════ -->
+  <h2>5. Technical Implementation Checklist</h2>
+  <!-- ═══════════════════════════════════════════════════════════════════ -->
+
+  <div class="card">
+    <h3>Per-Page SEO Elements</h3>
+    <table>
+      <tr>
+        <th>Page</th>
+        <th>Title Template</th>
+        <th>Meta Description</th>
+        <th>Schema</th>
+      </tr>
+      <tr>
+        <td><code>/contests</code></td>
+        <td>AI Contests — Quizly</td>
+        <td>Explore AI chat contests on Quizly. Join competitions, craft prompts, and win prizes.</td>
+        <td><code>CollectionPage</code>, <code>ItemList</code></td>
+      </tr>
+      <tr>
+        <td><code>/deck</code></td>
+        <td>Quizly.pub — AI Games & Interactive Chats</td>
+        <td>Discover AI-powered games: Turing Test, multi-step quizzes, RAG-enhanced literary chats. Built with LLM reasoning and classic ML.</td>
+        <td><code>WebPage</code>, <code>Organization</code></td>
+      </tr>
+      <tr>
+        <td><code>/contest?id=N</code></td>
+        <td>[Contest Name] — Quizly Contest</td>
+        <td>Participate in [Contest Name]. Create and play AI chat games...</td>
+        <td><code>Event</code>, <code>ItemList</code></td>
+      </tr>
+      <tr>
+        <td><code>/legal?rules=N</code></td>
+        <td>[Rule Title] — Quizly Rules</td>
+        <td>Official rules and guidelines for [context]...</td>
+        <td><code>WebPage</code></td>
+      </tr>
+      <tr>
+        <td><code>/echo-info?param=X</code></td>
+        <td>[Chat Title] — Quizly</td>
+        <td>[Chat description excerpt]...</td>
+        <td><code>Game</code> or <code>CreativeWork</code></td>
+      </tr>
+    </table>
+  </div>
+
+  <div class="card">
+    <h3>JSON-LD Schema for Contest Page</h3>
+    <pre>&lt;script type="application/ld+json"&gt;
+{
+  "@context": "https://schema.org",
+  "@type": "Event",
+  "name": "AI Chat Contest #1",
+  "description": "Create interactive AI chat games and compete...",
+  "url": "https://quizly.pub/contest?id=1",
+  "organizer": {
+    "@type": "Organization",
+    "name": "Quizly",
+    "url": "https://quizly.pub"
+  },
+  "eventStatus": "https://schema.org/EventScheduled",
+  "eventAttendanceMode": "https://schema.org/OnlineEventAttendanceMode"
+}
+&lt;/script&gt;</pre>
+  </div>
+
+  <div class="card">
+    <h3>JSON-LD Schema for /deck Page</h3>
+    <pre>&lt;script type="application/ld+json"&gt;
+{
+  "@context": "https://schema.org",
+  "@type": "WebPage",
+  "name": "Quizly.pub — AI Games & Interactive Chats",
+  "description": "Platform for AI-powered chat games using LLM reasoning, multi-step game design, and RAG technology.",
+  "url": "https://quizly.pub/deck",
+  "publisher": {
+    "@type": "Organization",
+    "name": "Quizly",
+    "url": "https://quizly.pub",
+    "contactPoint": {
+      "@type": "ContactPoint",
+      "email": "anton.suslonov@r-synergy.com"
+    }
+  },
+  "offers": {
+    "@type": "Offer",
+    "description": "Looking for business partners and co-founders"
+  }
+}
+&lt;/script&gt;</pre>
+  </div>
+
+  <!-- ═══════════════════════════════════════════════════════════════════ -->
+  <h2>6. JS Rendering Considerations</h2>
+  <!-- ═══════════════════════════════════════════════════════════════════ -->
+
+  <div class="card">
+    <h3>Option A (Recommended): Pre-render Key Pages</h3>
+    <ul>
+      <li><b>Why:</b> Most reliable for Google indexing — HTML is immediately crawlable</li>
+      <li><b>Pages to pre-render:</b> <code>/deck</code>, <code>/contest?id=*</code>, <code>/legal?rules=*</code></li>
+      <li><b>How:</b> Generate static HTML from API data during build/deploy</li>
+    </ul>
+
+    <h3>Option B: Dynamic JS with SEO Metadata</h3>
+    <ul>
+      <li><b>Current state:</b> Pages load via JS after initial HTML shell</li>
+      <li><b>Improvement:</b> Inject <code>&lt;title&gt;</code>, <code>&lt;meta&gt;</code>, and JSON-LD from JS immediately after data fetch</li>
+      <li><b>Risk:</b> Google may not execute JS correctly → delayed or incomplete indexing</li>
+    </ul>
+
+    <h3>Option C: SSR via Lambda</h3>
+    <ul>
+      <li><b>How:</b> Lambda endpoint returns full HTML with embedded content</li>
+      <li><b>When:</b> Best for frequently-changing content like contest leaderboards</li>
+    </ul>
+  </div>
+
+  <!-- ═══════════════════════════════════════════════════════════════════ -->
+  <h2>7. Google Search Console Setup</h2>
+  <!-- ═══════════════════════════════════════════════════════════════════ -->
+
+  <div class="card">
+    <h3>Step-by-Step GSC Configuration</h3>
+    <ol>
+      <li><b>Create property:</b> Add <code>quizly.pub</code> as a Domain property in GSC</li>
+      <li><b>Verify:</b> Use DNS TXT record verification (most reliable)</li>
+      <li><b>Submit sitemap:</b> Go to Sitemaps → Add <code>https://quizly.pub/sitemap.xml</code></li>
+      <li><b>Inspect URLs:</b> Use URL Inspection tool on each key page:
+        <ul>
+          <li><code>https://quizly.pub/contests</code></li>
+          <li><code>https://quizly.pub/brief</code></li>
+          <li><code>https://quizly.pub/deck</code></li>
+          <li><code>https://quizly.pub/contest?id=1</code></li>
+          <li><code>https://quizly.pub/contest?id=2</code></li>
+          <li><code>https://quizly.pub/contest?id=3</code></li>
+          <li><code>https://quizly.pub/legal?rules=2</code></li>
+          <li><code>https://quizly.pub/legal?rules=3</code></li>
+        </ul>
+      </li>
+      <li><b>Request indexing:</b> For each inspected URL, click "Request indexing"</li>
+      <li><b>Monitor:</b> Check Coverage report for crawl errors and indexed pages</li>
+    </ol>
+  </div>
+
+  <div class="card">
+    <h3>GSC Validation Checklist</h3>
+    <table>
+      <tr>
+        <th>Check</th>
+        <th>Tool</th>
+        <th>Expected Result</th>
+      </tr>
+      <tr>
+        <td>Page is indexable</td>
+        <td>URL Inspection</td>
+        <td>"URL is on Google" or "URL can be indexed"</td>
+      </tr>
+      <tr>
+        <td>Schema is valid</td>
+        <td>Rich Results Test</td>
+        <td>No errors, valid structured data detected</td>
+      </tr>
+      <tr>
+        <td>Page renders correctly</td>
+        <td>URL Inspection → View Tested Page</td>
+        <td>Content visible in rendered HTML</td>
+      </tr>
+      <tr>
+        <td>Mobile-friendly</td>
+        <td>Mobile-Friendly Test</td>
+        <td>"Page is mobile-friendly"</td>
+      </tr>
+      <tr>
+        <td>Core Web Vitals</td>
+        <td>PageSpeed Insights</td>
+        <td>Green scores for LCP, INP, CLS</td>
+      </tr>
+    </table>
+  </div>
+
+  <!-- ═══════════════════════════════════════════════════════════════════ -->
+  <h2>8. Internal Linking Strategy</h2>
+  <!-- ═══════════════════════════════════════════════════════════════════ -->
+
+  <div class="card">
+    <h3>Link Architecture for Quizly</h3>
+    <pre>
+Homepage (/)
+├── /contests (all contests listing)
+│   ├── /contest?id=1
+│   │   ├── /echo-info?param=X (chat entries)
+│   │   ├── /echo-info?param=Y
+│   │   └── /legal?rules=2 (contest rules)
+│   ├── /contest?id=2
+│   │   └── ...
+│   └── /contest?id=3
+│       └── ...
+├── /brief (user landing)
+├── /deck (pitch/demos)
+├── /about
+└── /legal
+    ├── /legal?rules=2
+    └── /legal?rules=3
+    </pre>
+
+    <h4>Implementation</h4>
+    <ul>
+      <li><b>Homepage:</b> Link to /contests listing and /deck prominently</li>
+      <li><b>/contests:</b> Landing page for all active contests with links to individual contest pages</li>
+      <li><b>Contest pages:</b> Link to all chat entries within that contest</li>
+      <li><b>Chat entries:</b> Link back to parent contest</li>
+      <li><b>/deck:</b> Include links to example chats and contests</li>
+      <li><b>Footer:</b> Include links to /about, /legal on all pages</li>
+    </ul>
+  </div>
+
+  <!-- ═══════════════════════════════════════════════════════════════════ -->
+  <h2>9. Operational Workflow</h2>
+  <!-- ═══════════════════════════════════════════════════════════════════ -->
+
+  <div class="card">
+    <h3>When to Update Sitemaps</h3>
+    <ul>
+      <li><b>New contest added:</b> Add to <code>sitemap-contests.xml</code></li>
+      <li><b>New public chat:</b> Regenerate <code>sitemap-echoes.xml</code> via script</li>
+      <li><b>New static page:</b> Add to <code>sitemap-static.xml</code></li>
+    </ul>
+
+    <h3>Sitemap Generation Commands</h3>
+    <pre># Generate all sitemaps from database (echoes, books, contests)
+# Requires AWS credentials (env vars or ~/.aws/credentials)
+./scripts/seo/generate_sitemaps.sh
+
+# Or run Python script directly:
+export AWS_ACCESS_KEY_ID="your-key"
+export AWS_SECRET_ACCESS_KEY="your-secret"
+export AWS_DEFAULT_REGION="us-east-1"
+python3 scripts/seo/generate_sitemaps.py
+
+# Manual: Edit sitemap-static.xml directly for static pages
+# Then deploy updated files</pre>
+  </div>
+
+  <!-- ═══════════════════════════════════════════════════════════════════ -->
+  <h2>10. Monitoring & Iteration</h2>
+  <!-- ═══════════════════════════════════════════════════════════════════ -->
+
+  <div class="card">
+    <h3>Weekly SEO Health Check</h3>
+    <ol>
+      <li>Check GSC Coverage for new errors</li>
+      <li>Review impressions/clicks for indexed pages</li>
+      <li>Verify new content is being indexed (URL Inspection)</li>
+      <li>Monitor Core Web Vitals in GSC</li>
+    </ol>
+
+    <h3>Key Metrics to Track</h3>
+    <ul>
+      <li><b>Pages indexed:</b> Target = all sitemap URLs indexed</li>
+      <li><b>Impressions:</b> Growing week-over-week</li>
+      <li><b>Click-through rate:</b> Improve via better titles/descriptions</li>
+      <li><b>Average position:</b> Track for target keywords</li>
+    </ul>
+  </div>
+
+  <!-- ═══════════════════════════════════════════════════════════════════ -->
+  <h2>11. Next Steps (Priority Order)</h2>
+  <!-- ═══════════════════════════════════════════════════════════════════ -->
+
+  <div class="critical">
+    <h3>🎯 Immediate Actions</h3>
+    <ol>
+      <li><b>Submit sitemap to GSC:</b> <code>https://quizly.pub/sitemap.xml</code></li>
+      <li><b>Request indexing:</b> Use URL Inspection on all 10 key URLs</li>
+      <li><b>Add JSON-LD schema:</b> Implement on /deck and contest pages</li>
+      <li><b>Verify meta tags:</b> Ensure unique titles/descriptions on all pages</li>
+      <li><b>Test mobile rendering:</b> Confirm all pages pass Mobile-Friendly Test</li>
+      <li><b>Add internal links:</b> Ensure /deck links from homepage prominently</li>
+    </ol>
+  </div>
+
+</body>
+</html>

@@ -1,0 +1,163 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Kvasir — ChatGPT GPSs (GPT-Powered Marketing Playbooks)</title>
+  <style>
+    body { font-family: system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif; line-height: 1.45; margin: 24px; max-width: 980px; }
+    nav a { margin-right: 10px; }
+    h2 { margin-top: 26px; }
+    .card { border: 1px solid #e6e6e6; border-radius: 12px; padding: 12px 14px; margin-top: 14px; }
+    pre { background: #f6f8fa; padding: 12px 14px; border-radius: 12px; overflow: auto; }
+    code { background: #f5f5f5; padding: 1px 6px; border-radius: 6px; }
+  </style>
+</head>
+<body>
+  <nav>
+    <a href="index.html">Index</a>
+    <a href="plan.html">One-page plan</a>
+    <a href="positioning.html">Positioning</a>
+    <a href="seo_google.html">Google/SEO</a>
+    <a href="social.html">Social</a>
+    <a href="content_community.html">Content/Community</a>
+    <a href="paid_email.html">Paid/Email</a>
+    <a href="metrics_ops.html">Metrics/Ops</a>
+  </nav>
+
+  <h1>ChatGPT GPSs (general sketch)</h1>
+  <p>
+    <b>GPSs</b> here means <b>GPT-powered systems</b>: repeatable prompt workflows that speed up marketing execution
+    (research, drafts, testing plans), while keeping humans responsible for truth, brand, and final decisions.
+  </p>
+
+  <div class="card">
+    <h2>Rules of use (guardrails)</h2>
+    <ul>
+      <li><b>No secrets:</b> don’t paste credentials, private user data, or non-public business-sensitive info.</li>
+      <li><b>Verify:</b> treat outputs as drafts; validate claims, numbers, and competitor statements.</li>
+      <li><b>Consistency:</b> maintain a single “source of truth” for messaging and product terminology.</li>
+      <li><b>Brand voice:</b> the model adapts to a style guide; humans enforce it.</li>
+    </ul>
+  </div>
+
+  <h2>GPS library (what to build first)</h2>
+  <div class="card">
+    <h3>GPS #1 — Niche discovery + ICP refinement</h3>
+    <ul>
+      <li>input: 5–10 candidate niches, current product strengths/limits</li>
+      <li>output: niche scorecard, hypotheses, top keywords, creator archetypes</li>
+    </ul>
+  </div>
+
+  <div class="card">
+    <h3>GPS #2 — Positioning / message house generator</h3>
+    <ul>
+      <li>output: positioning statement, 3 message pillars, proof points needed, red-flag claims to avoid</li>
+      <li>keeps a “lexicon” of preferred terms (component/series/course/etc.)</li>
+    </ul>
+  </div>
+
+  <div class="card">
+    <h3>GPS #3 — SEO topic map + internal linking plan</h3>
+    <ul>
+      <li>output: hub pages + supporting pages, suggested titles/meta, internal link graph</li>
+      <li>includes “thin-page detector” checklist</li>
+    </ul>
+  </div>
+
+  <div class="card">
+    <h3>GPS #4 — Social content calendar + repurposing</h3>
+    <ul>
+      <li>output: 2–4 weeks of posts per channel, creator “launch kit”, repurposing matrix</li>
+      <li>aligns posts to landing pages (topic/creator/series)</li>
+    </ul>
+  </div>
+
+  <div class="card">
+    <h3>GPS #5 — Partner / community outreach writer</h3>
+    <ul>
+      <li>output: personalized outreach drafts, follow-ups, and partner “offer” variants</li>
+      <li>strict: no invented facts; includes questions to fill before sending</li>
+    </ul>
+  </div>
+
+  <div class="card">
+    <h3>GPS #6 — Email lifecycle drafts</h3>
+    <ul>
+      <li>output: welcome series, weekly digest template, creator onboarding + activation series</li>
+      <li>includes subject line variants + plain-text versions</li>
+    </ul>
+  </div>
+
+  <div class="card">
+    <h3>GPS #7 — Experiment designer</h3>
+    <ul>
+      <li>output: hypotheses, success metrics, sample size heuristics (rough), test plan, risks</li>
+      <li>keeps focus on activation/retention, not vanity clicks</li>
+    </ul>
+  </div>
+
+  <h2>Prompt templates (copy/paste starting points)</h2>
+
+  <div class="card">
+    <h3>Template A — Niche scorecard</h3>
+    <pre><code>Role: You are a growth strategist.
+Context: Kvasir is a creator-first platform for structured learning content.
+Task: Score the following niches for (1) search demand, (2) creator supply availability,
+(3) community distribution paths, (4) content repeatability, (5) monetization potential.
+Output: a table, top 3 niches, and the first 10 SEO page ideas for each.
+Niches: [paste list]
+Constraints: Don’t invent facts. Ask questions if required inputs are missing.</code></pre>
+  </div>
+
+  <div class="card">
+    <h3>Template B — Message house</h3>
+    <pre><code>Role: Brand strategist.
+Task: Draft a message house for Kvasir.
+Include: positioning statement, 3 pillars, proof points we must gather, and phrases to avoid.
+Tone: clear, not hype.
+Product terms: [component/series/course/echo] (use consistently).
+Constraints: If you’re unsure about product details, ask 5 clarifying questions first.</code></pre>
+  </div>
+
+  <div class="card">
+    <h3>Template C — SEO topic map + linking</h3>
+    <pre><code>Role: SEO lead.
+Task: Build a topic map for niche: [X].
+Output:
+- 1 hub page + 20 supporting pages with titles and intent
+- Internal link plan (which pages link to which)
+- Draft meta descriptions for hub + top 5 pages
+Constraints:
+- Avoid thin pages; each page must have unique value.
+- No fabricated statistics; no competitor claims without sources.</code></pre>
+  </div>
+
+  <div class="card">
+    <h3>Template D — Social calendar + repurposing</h3>
+    <pre><code>Role: Social editor.
+Task: Create a 2-week content calendar for channels: [X, Y, Z].
+Inputs: niche [X], core landing pages [paste URLs or page types], target audience [creators/learners].
+Output: a calendar table + a repurposing matrix (one idea → multiple formats).
+Constraints: Keep every post tied to a measurable CTA (follow/start/save/newsletter).</code></pre>
+  </div>
+
+  <div class="card">
+    <h3>Template E — Outreach drafts (partners/community)</h3>
+    <pre><code>Role: Partnerships manager.
+Task: Draft 3 outreach emails (short, medium, long) to: [partner name + context].
+Offer: [curated page/webinar/creator bundle].
+Inputs to request if missing: audience size, niche fit, tracking link.
+Constraints: Don’t make up numbers or past results.</code></pre>
+  </div>
+
+  <h2>Operationalization (lightweight)</h2>
+  <ul>
+    <li><b>One shared doc:</b> “Messaging + Lexicon” that every GPS references.</li>
+    <li><b>Prompt versions:</b> store templates, note what changed and why.</li>
+    <li><b>Review loop:</b> human review + publish; track results; refine the GPS.</li>
+  </ul>
+
+</body>
+</html>
