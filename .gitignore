@@ -2,3 +2,16 @@ __pycache__/
 *.pyc
 .env
 .playwright/
+
+# Runtime state (never commit)
+runtime/browser_profiles/
+runtime/logs/*.log
+runtime/state/scheduler.lock
+
+# Generated reports
+marketing/reports/
+
+# Databases
+*.db
+*.sqlite
+

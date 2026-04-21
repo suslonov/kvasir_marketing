@@ -4,4 +4,8 @@ jinja2
 pydantic
 PyYAML
 python-dotenv
+playwright
+beautifulsoup4
+selectolax
+tenacity
 pytest

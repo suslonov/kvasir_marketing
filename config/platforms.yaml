@@ -1,0 +1,93 @@
+scan_interval_minutes: 10
+
+platforms:
+  reddit:
+    enabled: true
+    collector: reddit_browser
+    browser_profile_dir: ~/.kvasir/browser_profiles/reddit_profile
+    headless: true
+    max_posts_per_target: 12
+    max_targets_per_run: 8   # random sample size per pipeline run
+    targets:
+      - type: subreddit:hot
+        value: books
+      - type: subreddit:hot
+        value: suggestmeabook
+      - type: subreddit:new
+        value: ChatGPT
+      - type: subreddit:new
+        value: singularity
+      - type: subreddit:hot
+        value: artificial
+      - type: subreddit:hot
+        value: Teachers
+      - type: subreddit:hot
+        value: homeschool
+      - type: subreddit:hot
+        value: literature
+      - type: subreddit:new
+        value: SideProject
+      - type: subreddit:search
+        value: "quiz app"
+      - type: subreddit:search
+        value: "books ai"
+      - type: subreddit:search
+        value: "interactive reading"
+      # Author / book-specific subreddits
+      - type: subreddit:hot
+        value: dostoevsky
+      - type: subreddit:hot
+        value: Sherlock
+      - type: subreddit:hot
+        value: booksuggestions
+      # Game / quiz subreddits (→ link to quizly.pub main site)
+      - type: subreddit:hot
+        value: boardgames
+      - type: subreddit:hot
+        value: puzzles
+      - type: subreddit:search
+        value: "reading quiz"
+      - type: subreddit:search
+        value: "book discussion AI"
+
+  twitter:
+    enabled: false
+    collector: twitter
+    max_items_per_target: 10
+    targets:
+      - type: search
+        value: "AI books quiz"
+      - type: search
+        value: "education startup"
+      - type: search
+        value: "book recommendations app"
+      - type: search
+        value: "interactive learning AI"
+
+  youtube:
+    enabled: true
+    collector: youtube
+    max_posts_per_target: 10     # videos per search query
+    max_targets_per_run: 5       # random sample per pipeline run
+    targets:
+      # Book / reading discussions
+      - type: video_search
+        value: "book discussion AI recommendations"
+      - type: video_search
+        value: "classic literature analysis"
+      - type: video_search
+        value: "book club video essay"
+      - type: video_search
+        value: "what should I read next"
+      # AI / EdTech
+      - type: video_search
+        value: "AI reading app review"
+      - type: video_search
+        value: "interactive learning AI tools"
+      - type: video_search
+        value: "AI for education students"
+      # Quiz / trivia
+      - type: video_search
+        value: "literary quiz trivia books"
+      - type: video_search
+        value: "book trivia challenge"

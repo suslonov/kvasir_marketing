@@ -2,7 +2,6 @@
 
 from __future__ import annotations
 
-import hashlib
 import logging
 import time
 from datetime import datetime, timezone
@@ -10,7 +9,7 @@ from typing import Optional
 
 import httpx
 
-from src.models import AppConfig, ThreadItem, TwitterSearchConfig
+from src.models import CandidateItem, Platform
 
 logger = logging.getLogger(__name__)
 
@@ -20,12 +19,8 @@ _TWEET_FIELDS = "created_at,author_id,public_metrics,entities,text"
 _MAX_RESULTS_PER_REQUEST = 100
 
 
-def _make_hash(platform: str, external_id: str) -> str:
-    return hashlib.sha1(f"{platform}:{external_id}".encode()).hexdigest()
-
-
-def _parse_tweet(tweet: dict, query: str) -> Optional[ThreadItem]:
-    """Parse a raw Twitter v2 tweet dict into a ThreadItem."""
+def _parse_tweet(tweet: dict, query: str) -> Optional[CandidateItem]:
+    """Parse a raw Twitter v2 tweet dict into a CandidateItem."""
     try:
         tweet_id = tweet.get("id", "")
         if not tweet_id:
@@ -41,34 +36,30 @@ def _parse_tweet(tweet: dict, query: str) -> Optional[ThreadItem]:
         retweet_count = int(metrics.get("retweet_count", 0))
 
         created_raw = tweet.get("created_at")
-        created_at: Optional[datetime] = None
+        published_at: Optional[datetime] = None
         if created_raw:
             try:
-                created_at = datetime.fromisoformat(created_raw.replace("Z", "+00:00"))
+                published_at = datetime.fromisoformat(created_raw.replace("Z", "+00:00"))
             except ValueError:
                 pass
 
-        # Tweets have no title — use truncated text as a stand-in
         title = text if len(text) <= 120 else text[:117] + "…"
-
         url = f"https://twitter.com/i/web/status/{tweet_id}"
         author_id = tweet.get("author_id", "")
-
-        # Aggregate engagement as "score" (likes + retweets weighted)
         score = like_count + retweet_count * 2
 
-        return ThreadItem(
-            platform="twitter",
-            subreddit=query,  # reuse field as search-context label
-            external_id=tweet_id,
-            title=title,
+        return CandidateItem(
+            platform=Platform.twitter,
+            platform_object_id=tweet_id,
+            parent_target=query,
             url=url,
+            title=title,
+            body_excerpt=text[:500],
             author=author_id,
             score=score,
-            num_comments=reply_count,
-            created_at=created_at,
-            content_text=text,
-            canonical_hash=_make_hash("twitter", tweet_id),
+            comment_count=reply_count,
+            published_at=published_at,
+            discovered_at=datetime.now(timezone.utc),
         )
     except Exception as exc:
         logger.warning("Failed to parse tweet: %s", exc)
@@ -79,11 +70,10 @@ def _fetch_search(
     client: httpx.Client,
     bearer_token: str,
     query: str,
-    max_results: int = 100,
+    max_results: int = 50,
 ) -> list[dict]:
     """Fetch tweets matching a search query via Twitter API v2."""
     headers = {"Authorization": f"Bearer {bearer_token}"}
-    # cap per-request at API max (100 for Basic+)
     per_page = min(max_results, _MAX_RESULTS_PER_REQUEST)
     params = {
         "query": f"({query}) -is:retweet lang:en",
@@ -125,33 +115,28 @@ def _fetch_search(
     return all_tweets[:max_results]
 
 
-def collect(config: AppConfig, bearer_token: str) -> list[ThreadItem]:
-    """Collect tweets from all enabled search queries.
-
-    Returns a flat list of ThreadItem objects.
+def collect(
+    queries: list[str],
+    bearer_token: str,
+    max_per_query: int = 10,
+    delay_seconds: float = 2.0,
+) -> list[CandidateItem]:
     """
-    if not config.global_config.enable_twitter:
-        logger.info("Twitter collection disabled (enable_twitter=false).")
+    Collect candidates from a list of Twitter search queries.
+    Returns a flat list of CandidateItem objects.
+    """
+    if not queries:
+        logger.warning("No Twitter search queries configured.")
         return []
 
-    enabled_searches = [s for s in config.twitter_searches if s.enabled]
-    if not enabled_searches:
-        logger.warning("No enabled Twitter search queries configured.")
-        return []
-
-    delay = config.global_config.twitter_request_delay_seconds
-    max_per_search = config.global_config.max_items_per_search
-    items: list[ThreadItem] = []
+    items: list[CandidateItem] = []
 
     with httpx.Client(follow_redirects=True) as client:
-        for search_cfg in enabled_searches:
-            query = search_cfg.query
-            limit = min(search_cfg.max_items or max_per_search, max_per_search)
-            logger.info("Collecting Twitter search: '%s' (limit=%d)", query, limit)
-
-            raw_tweets = _fetch_search(client, bearer_token, query, max_results=limit)
-            if delay > 0 and enabled_searches[-1] is not search_cfg:
-                time.sleep(delay)
+        for i, query in enumerate(queries):
+            logger.info("Collecting Twitter search: '%s' (limit=%d)", query, max_per_query)
+            raw_tweets = _fetch_search(client, bearer_token, query, max_results=max_per_query)
+            if delay_seconds > 0 and i < len(queries) - 1:
+                time.sleep(delay_seconds)
 
             count = 0
             for tweet in raw_tweets:

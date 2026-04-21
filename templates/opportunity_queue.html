@@ -1,0 +1,547 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Kvasir — Opportunity Queue</title>
+<style>
+  :root {
+    --bg: #f4f5f7;
+    --surface: #ffffff;
+    --surface2: #f0f1f4;
+    --border: #dde0e8;
+    --text: #1a1d27;
+    --muted: #6b7280;
+    --accent: #4263eb;
+    --green: #2f9e44;
+    --yellow: #e67700;
+    --red: #c92a2a;
+    --orange: #d6500a;
+    --reddit: #ff4500;
+    --twitter: #1d9bf0;
+    --youtube: #cc0000;
+    --badge-new: #e8edff;
+    --badge-new-text: #3451c7;
+    --badge-approved: #d3f9d8;
+    --badge-approved-text: #2b7a3c;
+    --badge-reviewed: #fff3cd;
+    --badge-reviewed-text: #7d5a00;
+    --badge-posted: #d3f9d8;
+    --badge-posted-text: #1a5e2a;
+    --badge-rejected: #ffe3e3;
+    --badge-rejected-text: #a61e1e;
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+    font-size: 14px;
+    line-height: 1.6;
+  }
+
+  a { color: var(--accent); text-decoration: none; }
+  a:hover { text-decoration: underline; }
+
+  /* ── Header ─── */
+  .header {
+    background: var(--surface);
+    border-bottom: 1px solid var(--border);
+    padding: 16px 24px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    position: sticky;
+    top: 0;
+    z-index: 100;
+  }
+  .header h1 { font-size: 18px; font-weight: 700; letter-spacing: -0.3px; }
+  .header h1 span { color: var(--accent); }
+  .header .meta { color: var(--muted); font-size: 12px; }
+
+  /* ── Summary bar ─── */
+  .summary-bar {
+    background: var(--surface);
+    border-bottom: 1px solid var(--border);
+    padding: 12px 24px;
+    display: flex;
+    gap: 24px;
+    flex-wrap: wrap;
+    align-items: center;
+  }
+  .stat-chip {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 13px;
+  }
+  .stat-chip .label { color: var(--muted); }
+  .stat-chip .value { font-weight: 600; }
+  .stat-chip .dot {
+    width: 8px; height: 8px; border-radius: 50%;
+    background: var(--accent);
+    flex-shrink: 0;
+  }
+  .stat-chip .dot.green { background: var(--green); }
+  .stat-chip .dot.yellow { background: var(--yellow); }
+  .stat-chip .dot.red { background: var(--red); }
+
+  /* ── Main layout ─── */
+  .container { max-width: 1200px; margin: 0 auto; padding: 24px; }
+
+  /* ── Section ─── */
+  .section { margin-bottom: 40px; }
+  .section-header {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 14px;
+    padding-bottom: 8px;
+    border-bottom: 1px solid var(--border);
+  }
+  .section-header h2 { font-size: 15px; font-weight: 600; }
+  .section-count {
+    background: var(--surface2);
+    color: var(--muted);
+    font-size: 11px;
+    padding: 2px 8px;
+    border-radius: 10px;
+    font-weight: 500;
+  }
+  .section-empty {
+    color: var(--muted);
+    font-size: 13px;
+    padding: 12px 0;
+    font-style: italic;
+  }
+
+  /* ── Cards ─── */
+  .card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 16px;
+    margin-bottom: 12px;
+    transition: border-color 0.15s;
+  }
+  .card:hover { border-color: var(--accent); }
+
+  .card-header {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 12px;
+    margin-bottom: 8px;
+  }
+  .card-title {
+    font-size: 14px;
+    font-weight: 600;
+    line-height: 1.4;
+    flex: 1;
+  }
+  .card-title a { color: var(--text); }
+  .card-title a:hover { color: var(--accent); }
+
+  .card-badges {
+    display: flex;
+    gap: 6px;
+    flex-shrink: 0;
+    flex-wrap: wrap;
+    justify-content: flex-end;
+  }
+
+  /* ── Scores row ─── */
+  .scores {
+    display: flex;
+    gap: 10px;
+    flex-wrap: wrap;
+    margin-bottom: 10px;
+  }
+  .score-pill {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    font-size: 11px;
+    font-weight: 600;
+    padding: 2px 8px;
+    border-radius: 10px;
+    background: var(--surface2);
+  }
+  .score-pill .label { color: var(--muted); font-weight: 400; }
+  .score-high .value { color: var(--green); }
+  .score-mid .value { color: var(--yellow); }
+  .score-low .value { color: var(--muted); }
+  .risk-high .value { color: var(--red); }
+  .risk-mid .value { color: var(--orange); }
+  .risk-low .value { color: var(--green); }
+
+  /* ── Why now ─── */
+  .why-now {
+    font-size: 13px;
+    color: var(--muted);
+    margin-bottom: 10px;
+    padding-left: 10px;
+    border-left: 2px solid var(--border);
+  }
+
+  /* ── Copy variants ─── */
+  .copy-tabs {
+    display: flex;
+    gap: 0;
+    margin-bottom: 0;
+    border-bottom: 1px solid var(--border);
+  }
+  .copy-tab {
+    background: none;
+    border: none;
+    color: var(--muted);
+    font-size: 12px;
+    padding: 6px 12px;
+    cursor: pointer;
+    border-bottom: 2px solid transparent;
+    margin-bottom: -1px;
+    font-family: inherit;
+  }
+  .copy-tab.active {
+    color: var(--accent);
+    border-bottom-color: var(--accent);
+  }
+  .copy-tab:hover { color: var(--text); }
+
+  .copy-pane { display: none; padding: 10px 0 4px; }
+  .copy-pane.active { display: block; }
+
+  .copy-text {
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    padding: 10px 12px;
+    font-size: 13px;
+    line-height: 1.55;
+    white-space: pre-wrap;
+    color: var(--text);
+  }
+
+  .copy-action {
+    display: flex;
+    gap: 8px;
+    margin-top: 6px;
+  }
+
+  button.copy-btn {
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    color: var(--text);
+    font-size: 11px;
+    padding: 4px 10px;
+    border-radius: 4px;
+    cursor: pointer;
+    font-family: inherit;
+  }
+  button.copy-btn:hover { border-color: var(--accent); color: var(--accent); }
+
+  /* ── Risk notes ─── */
+  .risk-notes {
+    font-size: 12px;
+    color: var(--orange);
+    background: rgba(214, 80, 10, 0.07);
+    border: 1px solid rgba(214, 80, 10, 0.2);
+    border-radius: 4px;
+    padding: 6px 10px;
+    margin-top: 8px;
+  }
+  .risk-notes::before { content: "⚠ "; }
+
+  /* ── Badges ─── */
+  .badge {
+    font-size: 10px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    padding: 3px 8px;
+    border-radius: 10px;
+  }
+  .badge-platform-reddit { background: rgba(255,69,0,0.15); color: var(--reddit); }
+  .badge-platform-twitter { background: rgba(29,155,240,0.15); color: var(--twitter); }
+  .badge-platform-youtube { background: rgba(255,0,0,0.15); color: var(--youtube); }
+  .badge-status-new { background: var(--badge-new); color: var(--badge-new-text); }
+  .badge-status-reviewed { background: var(--badge-reviewed); color: var(--badge-reviewed-text); }
+  .badge-status-approved { background: var(--badge-approved); color: var(--badge-approved-text); }
+  .badge-status-posted { background: var(--badge-posted); color: var(--badge-posted-text); }
+  .badge-status-rejected { background: var(--badge-rejected); color: var(--badge-rejected-text); }
+
+  /* ── Runs section ─── */
+  .runs-table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 12px;
+  }
+  .runs-table th, .runs-table td {
+    text-align: left;
+    padding: 6px 12px;
+    border-bottom: 1px solid var(--border);
+  }
+  .runs-table th { color: var(--muted); font-weight: 500; }
+  .runs-table tr:last-child td { border-bottom: none; }
+  .run-ok { color: var(--green); }
+  .run-error { color: var(--red); }
+  .run-running { color: var(--yellow); }
+
+  .target-link {
+    font-size: 12px;
+    color: var(--muted);
+  }
+
+  .card-meta {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    font-size: 11px;
+    color: var(--muted);
+    margin-top: 8px;
+    flex-wrap: wrap;
+  }
+</style>
+</head>
+<body>
+
+<div class="header">
+  <h1>Kvasir <span>Opportunity Queue</span></h1>
+  <div class="meta">Generated {{ generated_at }} · {{ total_count }} items</div>
+</div>
+
+<div class="summary-bar">
+  {% set by_status = summary.get('by_status', {}) %}
+  {% set by_platform = summary.get('by_platform', {}) %}
+  <div class="stat-chip">
+    <span class="dot"></span>
+    <span class="label">Open:</span>
+    <span class="value">{{ summary.get('total_open', 0) }}</span>
+  </div>
+  {% if by_status.get('new') %}
+  <div class="stat-chip">
+    <span class="dot"></span>
+    <span class="label">New:</span>
+    <span class="value">{{ by_status.get('new', 0) }}</span>
+  </div>
+  {% endif %}
+  {% if by_status.get('approved') %}
+  <div class="stat-chip">
+    <span class="dot green"></span>
+    <span class="label">Approved:</span>
+    <span class="value">{{ by_status.get('approved', 0) }}</span>
+  </div>
+  {% endif %}
+  {% if by_platform.get('reddit') %}
+  <div class="stat-chip">
+    <span class="dot" style="background:var(--reddit)"></span>
+    <span class="label">Reddit:</span>
+    <span class="value">{{ by_platform.get('reddit', 0) }}</span>
+  </div>
+  {% endif %}
+  {% if by_platform.get('twitter') %}
+  <div class="stat-chip">
+    <span class="dot" style="background:var(--twitter)"></span>
+    <span class="label">Twitter:</span>
+    <span class="value">{{ by_platform.get('twitter', 0) }}</span>
+  </div>
+  {% endif %}
+  {% if by_status.get('expired') %}
+  <div class="stat-chip">
+    <span class="dot red"></span>
+    <span class="label">Expired:</span>
+    <span class="value">{{ by_status.get('expired', 0) }}</span>
+  </div>
+  {% endif %}
+</div>
+
+<div class="container">
+
+  {% for section_key, section_label, items in sections %}
+  <div class="section">
+    <div class="section-header">
+      <h2>{{ section_label }}</h2>
+      <span class="section-count">{{ items|length }}</span>
+    </div>
+
+    {% if not items %}
+    <div class="section-empty">No items in this category.</div>
+    {% else %}
+    {% for item in items %}
+    {% set card_id = "card-" ~ loop.index ~ "-" ~ section_key %}
+    <div class="card" id="{{ card_id }}">
+      <div class="card-header">
+        <div class="card-title">
+          <a href="{{ item.target_url }}" target="_blank" rel="noopener">{{ item.title_snapshot }}</a>
+        </div>
+        <div class="card-badges">
+          <span class="badge badge-platform-{{ item.platform }}">{{ item.platform }}</span>
+          <span class="badge badge-status-{{ item.status }}">{{ item.status }}</span>
+        </div>
+      </div>
+
+      <div class="target-link">
+        → {{ item.target_name }}
+        {% if item.target_url != item.target_url %}
+          <a href="{{ item.target_url }}" target="_blank">↗</a>
+        {% endif %}
+      </div>
+
+      <div class="scores">
+        <div class="score-pill {{ item.fit_score | score_class }}">
+          <span class="label">fit</span>
+          <span class="value">{{ item.fit_score }}</span>
+        </div>
+        <div class="score-pill {{ item.urgency_score | score_class }}">
+          <span class="label">urgency</span>
+          <span class="value">{{ item.urgency_score }}</span>
+        </div>
+        <div class="score-pill {{ item.risk_score | risk_class }}">
+          <span class="label">risk</span>
+          <span class="value">{{ item.risk_score }}</span>
+        </div>
+        <div class="score-pill {{ item.confidence_score | score_class }}">
+          <span class="label">confidence</span>
+          <span class="value">{{ item.confidence_score }}</span>
+        </div>
+      </div>
+
+      {% if item.why_now %}
+      <div class="why-now">{{ item.why_now }}</div>
+      {% endif %}
+
+      {% if item.recommended_text_short or item.recommended_text_medium or item.recommended_text_long %}
+      <div class="copy-tabs" id="tabs-{{ card_id }}">
+        {% if item.recommended_text_short %}
+        <button class="copy-tab active" onclick="switchTab('{{ card_id }}', 'short', this)">Short</button>
+        {% endif %}
+        {% if item.recommended_text_medium %}
+        <button class="copy-tab {% if not item.recommended_text_short %}active{% endif %}" onclick="switchTab('{{ card_id }}', 'medium', this)">Medium</button>
+        {% endif %}
+        {% if item.recommended_text_long %}
+        <button class="copy-tab {% if not item.recommended_text_short and not item.recommended_text_medium %}active{% endif %}" onclick="switchTab('{{ card_id }}', 'long', this)">Long</button>
+        {% endif %}
+      </div>
+
+      {% if item.recommended_text_short %}
+      <div class="copy-pane active" id="{{ card_id }}-short">
+        <div class="copy-text" id="text-{{ card_id }}-short">{{ item.recommended_text_short }}</div>
+        <div class="copy-action">
+          <button class="copy-btn" onclick="copyText('text-{{ card_id }}-short')">Copy</button>
+          <a href="{{ item.target_url }}" target="_blank" rel="noopener"><button class="copy-btn">Open ↗</button></a>
+        </div>
+      </div>
+      {% endif %}
+
+      {% if item.recommended_text_medium %}
+      <div class="copy-pane {% if not item.recommended_text_short %}active{% endif %}" id="{{ card_id }}-medium">
+        <div class="copy-text" id="text-{{ card_id }}-medium">{{ item.recommended_text_medium }}</div>
+        <div class="copy-action">
+          <button class="copy-btn" onclick="copyText('text-{{ card_id }}-medium')">Copy</button>
+          <a href="{{ item.target_url }}" target="_blank" rel="noopener"><button class="copy-btn">Open ↗</button></a>
+        </div>
+      </div>
+      {% endif %}
+
+      {% if item.recommended_text_long %}
+      <div class="copy-pane {% if not item.recommended_text_short and not item.recommended_text_medium %}active{% endif %}" id="{{ card_id }}-long">
+        <div class="copy-text" id="text-{{ card_id }}-long">{{ item.recommended_text_long }}</div>
+        <div class="copy-action">
+          <button class="copy-btn" onclick="copyText('text-{{ card_id }}-long')">Copy</button>
+          <a href="{{ item.target_url }}" target="_blank" rel="noopener"><button class="copy-btn">Open ↗</button></a>
+        </div>
+      </div>
+      {% endif %}
+      {% endif %}
+
+      {% if item.risk_notes %}
+      <div class="risk-notes">{{ item.risk_notes }}</div>
+      {% endif %}
+
+      <div class="card-meta">
+        <span>Added: {{ item.created_at | fmt_date }}</span>
+        <span>Seen: {{ item.last_seen_at | fmt_date }}</span>
+        {% if item.recommended_cta %}
+        <span>CTA: {{ item.recommended_cta }}</span>
+        {% endif %}
+        {% if item.decision_model %}
+        <span style="color:var(--border)">{{ item.decision_model }}</span>
+        {% endif %}
+      </div>
+    </div>
+    {% endfor %}
+    {% endif %}
+  </div>
+  {% endfor %}
+
+  <!-- Scanner runs -->
+  {% if recent_runs %}
+  <div class="section">
+    <div class="section-header">
+      <h2>Recent Runs</h2>
+      <span class="section-count">{{ recent_runs|length }}</span>
+    </div>
+    <div style="background:var(--surface);border:1px solid var(--border);border-radius:8px;overflow:hidden;">
+      <table class="runs-table">
+        <thead>
+          <tr>
+            <th>Started</th>
+            <th>Finished</th>
+            <th>Platform</th>
+            <th>Discovered</th>
+            <th>Queued</th>
+            <th>Status</th>
+            <th>Error</th>
+          </tr>
+        </thead>
+        <tbody>
+        {% for run in recent_runs %}
+          <tr>
+            <td>{{ run.started_at | fmt_date }}</td>
+            <td>{{ run.finished_at | fmt_date }}</td>
+            <td>{{ run.platform }}</td>
+            <td>{{ run.discovered_count }}</td>
+            <td>{{ run.queued_count }}</td>
+            <td class="run-{{ run.status }}">{{ run.status }}</td>
+            <td style="max-width:200px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;color:var(--muted)">{{ run.error_text or '–' }}</td>
+          </tr>
+        {% endfor %}
+        </tbody>
+      </table>
+    </div>
+  </div>
+  {% endif %}
+
+</div><!-- .container -->
+
+<script>
+function switchTab(cardId, variant, btn) {
+  const container = document.getElementById(cardId);
+  container.querySelectorAll('.copy-tab').forEach(t => t.classList.remove('active'));
+  container.querySelectorAll('.copy-pane').forEach(p => p.classList.remove('active'));
+  btn.classList.add('active');
+  const pane = document.getElementById(cardId + '-' + variant);
+  if (pane) pane.classList.add('active');
+}
+
+async function copyText(elementId) {
+  const el = document.getElementById(elementId);
+  if (!el) return;
+  try {
+    await navigator.clipboard.writeText(el.innerText);
+    const btn = el.nextElementSibling?.querySelector('.copy-btn');
+    if (btn) { btn.textContent = 'Copied!'; setTimeout(() => { btn.textContent = 'Copy'; }, 1500); }
+  } catch (e) {
+    const sel = window.getSelection();
+    const range = document.createRange();
+    range.selectNodeContents(el);
+    sel.removeAllRanges();
+    sel.addRange(range);
+  }
+}
+</script>
+
+</body>
+</html>

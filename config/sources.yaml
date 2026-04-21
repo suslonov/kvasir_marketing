@@ -10,6 +10,7 @@ global:
   claude_model: "claude-sonnet-4-6"
   claude_max_tokens: 4096
   reddit_request_delay_seconds: 1.0
+  book_list_path: "/mnt/git/kvasir_proto/src/html/kvasir.pub/book-list.txt"
 
 subreddits:
   # Books / reading
@@ -25,6 +26,15 @@ subreddits:
     enabled: true
   - name: 52book
     enabled: true
+  - name: booksuggestions
+    enabled: true
+  - name: whattoreadwhen
+    enabled: true
+  # Specific authors / classic literature
+  - name: dostoevsky
+    enabled: true
+  - name: Sherlock
+    enabled: true
   # AI / tech
   - name: ChatGPT
     enabled: true
@@ -37,10 +47,16 @@ subreddits:
     enabled: true
   - name: homeschool
     enabled: true
-  # Games / quiz
+  # Games / quiz (→ suggest quizly.pub main site)
   - name: trivia
     enabled: true
   - name: wordgames
+    enabled: true
+  - name: boardgames
+    enabled: true
+  - name: rpg
+    enabled: true
+  - name: puzzles
     enabled: true
 
 twitter_searches:
@@ -60,6 +76,7 @@ twitter_searches:
     enabled: true
 
 include_keywords:
+  # Core Quizly topics
   - ai book
   - book quiz
   - literature quiz
@@ -84,6 +101,12 @@ include_keywords:
   - recommend
   - quiz
   - literary
+  # Game / quiz community signals
+  - trivia night
+  - board game
+  - tabletop game
+  - quiz night
+  - pub quiz
 
 exclude_keywords:
   - porn

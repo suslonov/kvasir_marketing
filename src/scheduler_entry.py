@@ -1,16 +1,21 @@
-"""Cron-safe pipeline entry point.
+"""
+Cron-safe pipeline entry point with overlap guard.
 
-Usage in crontab (prefer scripts/run.sh instead):
-    0 */6 * * * bash /mnt/git/kvasir_marketing/scripts/run.sh \
-        >> ~/logs/kvasir_cron.log 2>&1
+Usage:
+    python -m src.scheduler_entry
+
+Crontab example (every 10 minutes):
+    */10 * * * * bash /path/to/kvasir_marketing/scripts/run_scheduler.sh >> ~/logs/kvasir.log 2>&1
 """
 
 from __future__ import annotations
 
+import fcntl
 import logging
 import os
 import sys
 from pathlib import Path
+from typing import Any, Optional
 
 
 def _find_repo_root(start: Path) -> Path:
@@ -38,7 +43,13 @@ except ImportError:
     pass
 
 from src import pipeline
-from src.settings import load_config, project_root
+from src.settings import (
+    get_db_path,
+    get_output_html_path,
+    load_config,
+    load_platforms_config,
+    project_root,
+)
 
 logging.basicConfig(
     level=logging.INFO,
@@ -48,23 +59,65 @@ logging.basicConfig(
 )
 logger = logging.getLogger("scheduler")
 
+_LOCK_FILE = _PROJECT_ROOT / "runtime" / "state" / "scheduler.lock"
+
+
+def _acquire_lock() -> Optional[Any]:
+    """
+    Acquire a file lock to prevent overlapping runs.
+    Returns the lock file handle on success, None if already locked.
+    """
+    _LOCK_FILE.parent.mkdir(parents=True, exist_ok=True)
+    fh = open(_LOCK_FILE, "w")
+    try:
+        fcntl.flock(fh, fcntl.LOCK_EX | fcntl.LOCK_NB)
+        return fh
+    except OSError:
+        fh.close()
+        return None
+
 
 def main() -> None:
-    root = project_root()
-    config = load_config(root / "config" / "sources.yaml")
-    db_path = Path(os.path.expanduser(config.global_config.db_path))
-    output_path = Path(os.path.expanduser(config.global_config.output_html))
+    lock = _acquire_lock()
+    if lock is None:
+        logger.warning("Another scheduler run is already active — skipping this cycle.")
+        sys.exit(0)
 
-    logger.info("Starting scheduled social scanner run …")
-    stats = pipeline.run_pipeline(config, db_path, output_path)
-    logger.info(
-        "Finished: fetched=%d kept=%d dups=%d dropped=%d claude=%d rendered=%d errors=%d",
-        stats.fetched, stats.kept, stats.duplicates, stats.dropped,
-        stats.claude_evaluated, stats.rendered_count, len(stats.errors),
-    )
+    try:
+        root = project_root()
+        app_config = load_config(root / "config" / "sources.yaml")
+        platforms_config = load_platforms_config(root / "config" / "platforms.yaml")
 
-    for err in stats.errors:
-        logger.warning("Error: %s", err)
+        db_path = get_db_path(app_config)
+        output_path = get_output_html_path(app_config)
+
+        logger.info("=== Kvasir scheduler starting (db=%s) ===", db_path)
+
+        stats = pipeline.run_pipeline(
+            db_path=db_path,
+            output_path=output_path,
+            platforms_config=platforms_config,
+            app_config=app_config,
+        )
+
+        logger.info(
+            "Run complete: discovered=%d after_filter=%d queued=%d expired=%d errors=%d",
+            stats["discovered"],
+            stats["after_filter"],
+            stats["queued"],
+            stats["expired"],
+            len(stats["errors"]),
+        )
+
+        for err in stats["errors"]:
+            logger.warning("Error: %s", err)
+
+        if stats["errors"]:
+            sys.exit(1)
+
+    finally:
+        fcntl.flock(lock, fcntl.LOCK_UN)
+        lock.close()
 
 
 if __name__ == "__main__":

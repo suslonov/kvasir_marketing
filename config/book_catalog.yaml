@@ -1,0 +1,300 @@
+# Quizly Reading Hall — available books catalog
+# Source: kvasir_proto book-list.txt
+#
+# Used by the opportunity scanner to detect when a thread mentions a book
+# or author available on the platform, and inject a relevant link.
+
+reading_hall_url: "https://quizly.pub/books"
+quizly_url: "https://quizly.pub"
+
+# Reading Hall CTA text (used in recommendations when a book is mentioned)
+reading_hall_cta: >
+  you can read the book, discuss it with our AI adviser, generate a video on
+  the book, and take part in contests — all at quizly.pub/books
+
+# Game / quiz subreddits — suggest quizly.pub (main site) instead of /books
+game_subreddits:
+  - trivia
+  - wordgames
+  - boardgames
+  - rpg
+  - tabletopgaming
+  - puzzles
+  - quizzes
+  - AskReddit   # quiz-like discussion threads
+  - CasualConversation
+
+# Authors — each entry has the canonical English name plus aliases used in
+# Reddit discussions (different transliterations, abbreviations, etc.).
+# Match is case-insensitive against post title + body excerpt.
+authors:
+  # ── English / Western ─────────────────────────────────────────────────────
+  - canonical: "Agatha Christie"
+    match: ["christie", "agatha christie", "hercule poirot", "miss marple"]
+
+  - canonical: "Ambrose Bierce"
+    match: ["ambrose bierce", "bierce"]
+
+  - canonical: "Anne Bronte"
+    match: ["anne bronte", "anne brontë"]
+
+  - canonical: "Anthony Trollope"
+    match: ["trollope", "anthony trollope"]
+
+  - canonical: "Arthur Conan Doyle"
+    match: ["conan doyle", "sherlock holmes", "arthur conan doyle", "dr watson"]
+
+  - canonical: "Bernard Shaw"
+    match: ["bernard shaw", "george bernard shaw", "g.b. shaw", "pygmalion"]
+
+  - canonical: "Bret Harte"
+    match: ["bret harte"]
+
+  - canonical: "Charles Darwin"
+    match: ["charles darwin", "darwin", "origin of species"]
+
+  - canonical: "Charles Dickens"
+    match: ["dickens", "charles dickens", "oliver twist", "david copperfield",
+            "great expectations", "tale of two cities", "a christmas carol",
+            "bleak house", "nicholas nickleby"]
+
+  - canonical: "Charlotte Bronte"
+    match: ["charlotte bronte", "charlotte brontë", "jane eyre", "villette"]
+
+  - canonical: "D. H. Lawrence"
+    match: ["d.h. lawrence", "dh lawrence", "d. h. lawrence", "sons and lovers",
+            "lady chatterley", "rainbow"]
+
+  - canonical: "Edgar Allan Poe"
+    match: ["edgar allan poe", "edgar poe", "poe", "house of usher", "the raven"]
+
+  - canonical: "Edward Bulwer-Lytton"
+    match: ["bulwer-lytton", "bulwer lytton", "last days of pompeii"]
+
+  - canonical: "Elizabeth Gaskell"
+    match: ["gaskell", "elizabeth gaskell", "north and south", "cranford"]
+
+  - canonical: "Ernest Hemingway"
+    match: ["hemingway", "ernest hemingway", "farewell to arms", "the sun also rises"]
+
+  - canonical: "F. Scott Fitzgerald"
+    match: ["fitzgerald", "f. scott fitzgerald", "f scott fitzgerald",
+            "the great gatsby", "great gatsby", "gatsby"]
+
+  - canonical: "Frank Baum"
+    match: ["frank baum", "l. frank baum", "wizard of oz", "wonderful wizard of oz"]
+
+  - canonical: "G. K. Chesterton"
+    match: ["chesterton", "g.k. chesterton", "father brown", "man who was thursday"]
+
+  - canonical: "Geoffrey Chaucer"
+    match: ["chaucer", "geoffrey chaucer", "canterbury tales"]
+
+  - canonical: "George Eliot"
+    match: ["george eliot", "middlemarch", "silas marner", "mill on the floss"]
+
+  - canonical: "Henry David Thoreau"
+    match: ["thoreau", "henry david thoreau", "walden", "civil disobedience"]
+
+  - canonical: "Henry James"
+    match: ["henry james", "turn of the screw", "portrait of a lady",
+            "washington square", "the ambassadors"]
+
+  - canonical: "Herbert George Wells"
+    match: ["h.g. wells", "hg wells", "h. g. wells", "herbert george wells",
+            "war of the worlds", "the time machine", "time machine"]
+
+  - canonical: "Jack London"
+    match: ["jack london", "call of the wild", "white fang", "sea wolf",
+            "martin eden", "iron heel"]
+
+  - canonical: "James Fenimore Cooper"
+    match: ["james fenimore cooper", "fenimore cooper", "last of the mohicans",
+            "leatherstocking"]
+
+  - canonical: "Jane Austen"
+    match: ["jane austen", "pride and prejudice", "sense and sensibility",
+            "emma", "persuasion", "mansfield park", "northanger abbey"]
+
+  - canonical: "Jerome K. Jerome"
+    match: ["jerome k jerome", "jerome k. jerome", "three men in a boat",
+            "three men on the bummel"]
+
+  - canonical: "John Galsworthy"
+    match: ["galsworthy", "john galsworthy", "forsyte saga", "forsyte"]
+
+  - canonical: "Jonathan Swift"
+    match: ["jonathan swift", "swift", "gulliver's travels", "gulliver"]
+
+  - canonical: "Kate Chopin"
+    match: ["kate chopin", "chopin", "the awakening"]
+
+  - canonical: "Katherine Mansfield"
+    match: ["katherine mansfield", "mansfield"]
+
+  - canonical: "Lewis Carroll"
+    match: ["lewis carroll", "alice in wonderland", "alice's adventures",
+            "through the looking glass", "hunting of the snark"]
+
+  - canonical: "Louisa May Alcott"
+    match: ["louisa may alcott", "alcott", "little women"]
+
+  - canonical: "Mark Twain"
+    match: ["mark twain", "twain", "huckleberry finn", "tom sawyer",
+            "connecticut yankee", "prince and the pauper", "life on the mississippi"]
+
+  - canonical: "Mary Shelley"
+    match: ["mary shelley", "mary wollstonecraft shelley", "frankenstein",
+            "modern prometheus"]
+
+  - canonical: "Mayne Reid"
+    match: ["mayne reid", "captain mayne reid", "headless horseman"]
+
+  - canonical: "Nathaniel Hawthorne"
+    match: ["hawthorne", "nathaniel hawthorne", "house of seven gables",
+            "scarlet letter"]
+
+  - canonical: "O. Henry"
+    match: ["o. henry", "o henry", "o.henry"]
+
+  - canonical: "Oscar Wilde"
+    match: ["oscar wilde", "wilde", "picture of dorian gray", "dorian gray",
+            "importance of being earnest", "canterville ghost", "salome"]
+
+  - canonical: "P. G. Wodehouse"
+    match: ["wodehouse", "p.g. wodehouse", "p. g. wodehouse", "jeeves",
+            "bertie wooster", "right ho jeeves"]
+
+  - canonical: "Robert Louis Stevenson"
+    match: ["robert louis stevenson", "stevenson", "treasure island",
+            "jekyll and hyde", "dr jekyll", "kidnapped"]
+
+  - canonical: "Rudyard Kipling"
+    match: ["kipling", "rudyard kipling", "jungle book", "kim", "just so stories"]
+
+  - canonical: "Sinclair Lewis"
+    match: ["sinclair lewis", "elmer gantry", "main street"]
+
+  - canonical: "Somerset Maugham"
+    match: ["maugham", "somerset maugham", "of human bondage", "moon and sixpence",
+            "the painted veil", "theatre"]
+
+  - canonical: "Theodore Dreiser"
+    match: ["dreiser", "theodore dreiser", "sister carrie", "the financier"]
+
+  - canonical: "Thomas Hardy"
+    match: ["thomas hardy", "hardy", "tess of the d'urbervilles", "tess",
+            "jude the obscure", "far from the madding crowd", "mayor of casterbridge"]
+
+  - canonical: "Upton Sinclair"
+    match: ["upton sinclair", "sinclair", "the jungle"]
+
+  - canonical: "Walter Scott"
+    match: ["walter scott", "ivanhoe", "rob roy", "waverley", "quentin durward"]
+
+  - canonical: "William Faulkner"
+    match: ["faulkner", "william faulkner", "sound and the fury"]
+
+  - canonical: "William Makepeace Thackeray"
+    match: ["thackeray", "william thackeray", "vanity fair", "barry lyndon"]
+
+  - canonical: "William Shakespeare"
+    match: ["shakespeare", "william shakespeare", "hamlet", "othello", "macbeth",
+            "king lear", "romeo and juliet", "midsummer", "antony and cleopatra"]
+
+  # ── Russian classics ───────────────────────────────────────────────────────
+  - canonical: "Fyodor Dostoevsky"
+    match: ["dostoevsky", "dostoyevsky", "dostoevski", "dostoyevski",
+            "достоевский", "dostojewski",
+            "crime and punishment", "преступление и наказание",
+            "brothers karamazov", "братья карамазовы",
+            "the idiot", "идиот",
+            "the possessed", "бесы", "demons",
+            "notes from underground",
+            "white nights", "белые ночи",
+            "poor folk", "бедные люди",
+            "the gambler", "игрок"]
+
+  - canonical: "Anton Chekhov"
+    match: ["chekhov", "tchehov", "tchekov", "чехов",
+            "the seagull", "чайка",
+            "uncle vanya", "дядя ваня",
+            "three sisters", "три сестры",
+            "cherry orchard", "вишневый сад",
+            "ward no 6", "палата №6",
+            "lady with a dog", "дама с собачкой"]
+
+  - canonical: "Leo Tolstoy / Aleksey Tolstoy"
+    match: ["tolstoy", "толстой", "war and peace", "anna karenina",
+            "aleksey tolstoy", "alexei tolstoy", "aelita"]
+
+  - canonical: "Nikolai Gogol"
+    match: ["gogol", "гоголь",
+            "dead souls", "мертвые души",
+            "the inspector general", "ревизор",
+            "overcoat", "шинель",
+            "taras bulba", "тарас бульба",
+            "viy", "вий", "nose", "нос"]
+
+  - canonical: "Mikhail Bulgakov"
+    match: ["bulgakov", "булгаков", "master and margarita",
+            "master i margarita", "мастер и маргарита",
+            "heart of a dog", "собачье сердце", "white guard", "белая гвардия"]
+
+  - canonical: "Alexander Pushkin"
+    match: ["pushkin", "пушкин",
+            "eugene onegin", "евгений онегин",
+            "captain's daughter", "капитанская дочка",
+            "dubrovsky", "дубровский",
+            "boris godunov", "борис годунов"]
+
+  - canonical: "Ivan Turgenev"
+    match: ["turgenev", "тургенев", "fathers and sons", "fathers and children",
+            "on the eve", "rudin", "first love", "sportsman's sketches"]
+
+  - canonical: "Mikhail Lermontov"
+    match: ["lermontov", "лермонтов", "hero of our time", "a hero of our time",
+            "герой нашего времени", "mcyri", "demon"]
+
+  - canonical: "Nikolai Leskov"
+    match: ["leskov", "лесков", "lefty", "enchanted wanderer", "lady macbeth of mtsensk"]
+
+  - canonical: "Ivan Bunin"
+    match: ["bunin", "бунин"]
+
+  - canonical: "Ivan Goncharov"
+    match: ["goncharov", "гончаров", "oblomov"]
+
+  - canonical: "Isaac Babel"
+    match: ["babel", "бабель", "isaac babel", "red cavalry", "odessa tales"]
+
+  - canonical: "Alexander Kuprin"
+    match: ["kuprin", "куприн"]
+
+  - canonical: "Alexander Grin"
+    match: ["alexander grin", "scarlet sails", "алые паруса"]
+
+  - canonical: "Alexander Belyaev"
+    match: ["belyaev", "беляев", "professor dowell"]
+
+  - canonical: "Nikolai Karamzin"
+    match: ["karamzin", "карамзин", "poor liza"]
+
+  - canonical: "Mikhail Saltykov-Shchedrin"
+    match: ["saltykov", "shchedrin", "saltykov-shchedrin", "щедрин"]
+
+  - canonical: "Ilya Ilf and Evgeny Petrov"
+    match: ["ilf", "petrov", "ilf and petrov", "twelve chairs", "golden calf",
+            "двенадцать стульев", "золотой теленок"]
+
+  # ── French / German (translated, on platform) ─────────────────────────────
+  - canonical: "Jules Verne"
+    match: ["jules verne", "verne", "жюль верн", "twenty thousand leagues",
+            "20000 leagues", "around the world in eighty days", "80 days"]
+
+  - canonical: "Prosper Mérimée"
+    match: ["merimee", "mérimée", "prosper merimee", "carmen", "colomba"]
+
+  - canonical: "E.T.A. Hoffmann"
+    match: ["hoffmann", "e.t.a. hoffmann", "hoffman", "гофман",
+            "nutcracker", "sandman"]

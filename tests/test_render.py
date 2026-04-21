@@ -65,8 +65,9 @@ def test_render_contains_expected_content() -> None:
         render_html(opportunities=[opp], output_path=output)
         content = output.read_text()
         assert "Unique thread title XYZ789" in content
-        assert "r/books" in content
-        assert "comment_opportunity" in content.lower() or "comment opportunity" in content.lower()
+        assert "books" in content
+        # New template uses placement_type "comment_reply" mapped from "comment_opportunity"
+        assert "comment_reply" in content or "Reply Opportunities" in content
 
 
 def test_render_multiple_subreddits() -> None:
@@ -79,8 +80,8 @@ def test_render_multiple_subreddits() -> None:
         count = render_html(opportunities=opps, output_path=output)
         assert count == 2
         content = output.read_text()
-        assert "r/books" in content
-        assert "r/ChatGPT" in content
+        assert "books" in content
+        assert "ChatGPT" in content
 
 
 def test_render_creates_parent_dirs() -> None:
