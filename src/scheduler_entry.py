@@ -1,9 +1,8 @@
 """Cron-safe pipeline entry point.
 
-Usage in crontab:
-    0 */6 * * * /home/user/miniconda3/envs/social-scanner/bin/python \
-        /home/user/git/kvasir_marketing/social_scanner/src/scheduler_entry.py \
-        >> /home/user/git/kvasir_marketing/social_scanner/data/logs/cron.log 2>&1
+Usage in crontab (prefer scripts/run.sh instead):
+    0 */6 * * * bash /mnt/git/kvasir_marketing/scripts/run.sh \
+        >> ~/logs/kvasir_cron.log 2>&1
 """
 
 from __future__ import annotations

@@ -1,7 +1,7 @@
 global:
   timezone: "UTC"
-  db_path: "~/git/kvasir_marketing/social_scanner/data/state.db"
-  output_html: "~/git/kvasir_marketing/social_scanner/data/rendered/index.html"
+  db_path: "~/social_scanner/state.db"
+  output_html: "~/social_scanner/rendered/index.html"
   max_items_per_subreddit: 50
   max_claude_batch_size: 20
   min_score: 10
@@ -41,6 +41,22 @@ subreddits:
   - name: trivia
     enabled: true
   - name: wordgames
+    enabled: true
+
+twitter_searches:
+  # Books / reading discovery
+  - query: "book quiz OR book club discussion OR what should I read"
+    enabled: true
+  - query: "interactive reading OR AI reading app OR book recommendations app"
+    enabled: true
+  # AI-assisted learning
+  - query: "AI for learning OR interactive learning app OR AI education tool"
+    enabled: true
+  # Literary / classics
+  - query: "classic literature discussion OR literary quiz OR great books"
+    enabled: true
+  # Teaching / classroom
+  - query: "AI classroom tool OR EdTech reading OR book quiz for students"
     enabled: true
 
 include_keywords:

@@ -34,10 +34,16 @@ class SubredditConfig(BaseModel):
     max_items: Optional[int] = None
 
 
+class TwitterSearchConfig(BaseModel):
+    query: str
+    enabled: bool = True
+    max_items: Optional[int] = None
+
+
 class GlobalConfig(BaseModel):
     timezone: str = "UTC"
-    output_html: str = "data/rendered/index.html"
-    db_path: str = "data/state.db"
+    output_html: str = "~/social_scanner/rendered/index.html"
+    db_path: str = "~/social_scanner/state.db"
     max_items_per_subreddit: int = 50
     max_claude_batch_size: int = 20
     min_score: int = 10
@@ -46,11 +52,15 @@ class GlobalConfig(BaseModel):
     claude_model: str = "claude-sonnet-4-6"
     claude_max_tokens: int = 4096
     reddit_request_delay_seconds: float = 1.0
+    enable_twitter: bool = False
+    twitter_request_delay_seconds: float = 2.0
+    max_items_per_search: int = 50
 
 
 class AppConfig(BaseModel):
     global_config: GlobalConfig = Field(alias="global", default_factory=GlobalConfig)
     subreddits: list[SubredditConfig] = Field(default_factory=list)
+    twitter_searches: list[TwitterSearchConfig] = Field(default_factory=list)
     include_keywords: list[str] = Field(default_factory=list)
     exclude_keywords: list[str] = Field(default_factory=list)
 

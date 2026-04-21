@@ -11,6 +11,7 @@ from __future__ import annotations
 
 import json
 import logging
+import os
 import sys
 from pathlib import Path
 
@@ -40,10 +41,8 @@ class SocialScannerModule:
             self.db_path = Path(os.path.expanduser(app_config.global_config.db_path)).resolve()
             self.output_path = Path(os.path.expanduser(app_config.global_config.output_html)).resolve()
         except Exception:
-            self.db_path = (self.repo_path / config.get("db_path", "data/state.db")).resolve()
-            self.output_path = (
-                self.repo_path / config.get("output_html", "data/rendered/index.html")
-            ).resolve()
+            self.db_path = Path(os.path.expanduser(config.get("db_path", "~/social_scanner/state.db"))).resolve()
+            self.output_path = Path(os.path.expanduser(config.get("output_html", "~/social_scanner/rendered/index.html"))).resolve()
 
     def handle(self, method: str, path: str, body: bytes, headers: dict) -> Response:
         if method in ("GET", "HEAD") and path in ("", "/", "/index.html"):

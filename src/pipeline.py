@@ -8,8 +8,9 @@ from pathlib import Path
 
 from src import db, heuristics, render
 from src.collectors import reddit
+from src.collectors import twitter
 from src.models import AppConfig, RunStats
-from src.settings import get_anthropic_api_key
+from src.settings import get_anthropic_api_key, get_x_bearer_token
 
 logger = logging.getLogger(__name__)
 
@@ -92,7 +93,6 @@ def run_pipeline(
 def _collect_all(config: AppConfig) -> list:
     """Collect from all enabled sources."""
     items = []
-    errors = []
 
     try:
         reddit_items = reddit.collect(config)
@@ -100,7 +100,17 @@ def _collect_all(config: AppConfig) -> list:
         logger.info("Reddit: collected %d items", len(reddit_items))
     except Exception as exc:
         logger.error("Reddit collector failed: %s", exc)
-        errors.append(str(exc))
+
+    if config.global_config.enable_twitter:
+        try:
+            bearer_token = get_x_bearer_token()
+            twitter_items = twitter.collect(config, bearer_token)
+            items.extend(twitter_items)
+            logger.info("Twitter: collected %d items", len(twitter_items))
+        except EnvironmentError as exc:
+            logger.warning("Twitter collection skipped: %s", exc)
+        except Exception as exc:
+            logger.error("Twitter collector failed: %s", exc)
 
     return items
 
