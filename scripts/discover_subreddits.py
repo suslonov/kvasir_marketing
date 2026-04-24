@@ -24,6 +24,7 @@ from typing import Any
 import yaml
 
 REPO_ROOT = Path(__file__).resolve().parents[1]
+sys.path.insert(0, str(REPO_ROOT))
 CONFIG_DIR = REPO_ROOT / "config"
 DISCOVERED_PATH = CONFIG_DIR / "discovered_subreddits.yaml"
 PLATFORMS_PATH = CONFIG_DIR / "platforms.yaml"
@@ -67,12 +68,8 @@ def _load_existing_known(platforms_path: Path, discovered_path: Path) -> set[str
 
 
 def _load_profile_dir() -> Path:
-    if PLATFORMS_PATH.exists():
-        data = yaml.safe_load(PLATFORMS_PATH.read_text(encoding="utf-8")) or {}
-        raw = data.get("platforms", {}).get("reddit", {}).get("browser_profile_dir", "")
-        if raw:
-            return Path(raw).expanduser().resolve()
-    return Path.home() / ".kvasir" / "browser_profiles" / "reddit_profile"
+    from src.settings import get_browser_profile_dir, load_platforms_config
+    return get_browser_profile_dir(load_platforms_config(PLATFORMS_PATH))
 
 
 def _extract_subreddits_from_page(page: Any) -> list[dict]:
@@ -99,10 +96,8 @@ def _extract_subreddits_from_page(page: Any) -> list[dict]:
 
 def _load_discovery_config() -> dict:
     """Return the reddit.discovery block from platforms.yaml (or empty dict)."""
-    if PLATFORMS_PATH.exists():
-        data = yaml.safe_load(PLATFORMS_PATH.read_text(encoding="utf-8")) or {}
-        return data.get("platforms", {}).get("reddit", {}).get("discovery", {})
-    return {}
+    from src.settings import get_discovery_config, load_platforms_config
+    return get_discovery_config(load_platforms_config(PLATFORMS_PATH))
 
 
 def discover_subreddits(headless: bool = True, dry_run: bool = False) -> list[dict]:

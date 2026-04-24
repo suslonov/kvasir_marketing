@@ -10,7 +10,7 @@ global:
   claude_model: "claude-sonnet-4-6"
   claude_max_tokens: 4096
   reddit_request_delay_seconds: 1.0
-  book_list_path: "/mnt/git/kvasir_proto/src/html/kvasir.pub/book-list.txt"
+  book_list_path: "~/git/kvasir_proto/src/html/kvasir.pub/book-list.txt"
 
 subreddits:
   # Books / reading

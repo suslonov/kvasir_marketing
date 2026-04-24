@@ -30,8 +30,13 @@ from typing import Any
 import yaml
 
 REPO_ROOT = Path(__file__).resolve().parents[1]
-DEFAULT_BOOK_LIST = Path("/mnt/git/kvasir_proto/src/html/kvasir.pub/book-list.txt")
+sys.path.insert(0, str(REPO_ROOT))
 DEFAULT_CATALOG = REPO_ROOT / "config" / "book_catalog.yaml"
+
+
+from src.settings import get_book_list_path
+
+DEFAULT_BOOK_LIST = get_book_list_path()
 
 _LINE_RE = re.compile(r"`([^`]+)`\s+`([^`]+)`")
 _CYRILLIC = re.compile(r"[\u0400-\u04FF]")

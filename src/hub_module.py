@@ -36,13 +36,15 @@ class SocialScannerModule:
 
         try:
             from src.settings import load_config
-            import os
+            from src.models import GlobalConfig
             app_config = load_config(self.sources_yaml)
-            self.db_path = Path(os.path.expanduser(app_config.global_config.db_path)).resolve()
-            self.output_path = Path(os.path.expanduser(app_config.global_config.output_html)).resolve()
+            self.db_path = Path(app_config.global_config.db_path).expanduser().resolve()
+            self.output_path = Path(app_config.global_config.output_html).expanduser().resolve()
         except Exception:
-            self.db_path = Path(os.path.expanduser(config.get("db_path", "~/social_scanner/state.db"))).resolve()
-            self.output_path = Path(os.path.expanduser(config.get("output_html", "~/social_scanner/rendered/index.html"))).resolve()
+            from src.models import GlobalConfig
+            _defaults = GlobalConfig()
+            self.db_path = Path(config.get("db_path", _defaults.db_path)).expanduser().resolve()
+            self.output_path = Path(config.get("output_html", _defaults.output_html)).expanduser().resolve()
 
     def handle(self, method: str, path: str, body: bytes, headers: dict) -> Response:
         if method in ("GET", "HEAD") and path in ("", "/", "/index.html"):

@@ -198,6 +198,7 @@ class GlobalConfig(BaseModel):
     timezone: str = "UTC"
     output_html: str = "~/social_scanner/rendered/index.html"
     db_path: str = "~/social_scanner/state.db"
+    book_list_path: str = "~/git/kvasir_proto/src/html/kvasir.pub/book-list.txt"
     max_items_per_subreddit: int = 50
     max_claude_batch_size: int = 20
     min_score: int = 10

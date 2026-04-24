@@ -116,6 +116,14 @@ def get_discovery_config(platforms_cfg: dict[str, Any]) -> dict[str, Any]:
 
 # ── Path helpers (read from sources.yaml, not env) ────────────────────────────
 
+def get_book_list_path(app_config: Optional[AppConfig] = None) -> Path:
+    """Resolve the book-list.txt path from sources.yaml (global.book_list_path)."""
+    if app_config:
+        return Path(app_config.global_config.book_list_path).expanduser()
+    cfg = load_config()
+    return Path(cfg.global_config.book_list_path).expanduser()
+
+
 def get_db_path(app_config: Optional[AppConfig] = None) -> Path:
     """Resolve the database path from sources.yaml (global.db_path)."""
     if app_config:
