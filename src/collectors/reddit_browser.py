@@ -18,11 +18,7 @@ logger = logging.getLogger(__name__)
 _REDDIT_BASE = "https://www.reddit.com"
 _LOGIN_TIMEOUT_MS = 30_000
 _NAV_TIMEOUT_MS = 20_000
-_INTER_REQUEST_DELAY_MIN = 2.0
-_INTER_REQUEST_DELAY_MAX = 5.0
 
-# After this many consecutive empty runs a target is excluded from sampling.
-_MAX_CONSECUTIVE_FAILURES = 3
 _FAILURES_FILE = Path(__file__).resolve().parents[2] / "runtime" / "state" / "target_failures.json"
 
 
@@ -47,13 +43,13 @@ def _save_failures(data: dict[str, int]) -> None:
 
 
 def _filter_active_targets(
-    targets: list[dict], failures: dict[str, int]
+    targets: list[dict], failures: dict[str, int], max_consecutive_failures: int
 ) -> tuple[list[dict], list[str]]:
     """Return (active_targets, skipped_keys) based on consecutive failure count."""
     active, skipped = [], []
     for t in targets:
         key = _target_key(t)
-        if failures.get(key, 0) >= _MAX_CONSECUTIVE_FAILURES:
+        if failures.get(key, 0) >= max_consecutive_failures:
             skipped.append(key)
         else:
             active.append(t)
@@ -108,11 +104,15 @@ class RedditBrowserCollector:
         headless: bool = True,
         max_posts_per_target: int = 12,
         max_targets_per_run: int = 8,
+        inter_request_delay: tuple[float, float] = (2.0, 5.0),
+        max_consecutive_failures: int = 3,
     ) -> None:
         self.profile_dir = profile_dir
         self.headless = headless
         self.max_posts = max_posts_per_target
         self.max_targets_per_run = max_targets_per_run
+        self.inter_request_delay = inter_request_delay
+        self.max_consecutive_failures = max_consecutive_failures
 
     def collect(self, targets: list[dict[str, Any]]) -> list[CandidateItem]:
         """
@@ -141,11 +141,13 @@ class RedditBrowserCollector:
 
         # Load persistent failure counts and filter out consistently empty targets
         failures = _load_failures()
-        active_targets, skipped = _filter_active_targets(targets, failures)
+        active_targets, skipped = _filter_active_targets(
+            targets, failures, self.max_consecutive_failures
+        )
         if skipped:
             logger.info(
                 "Skipping %d target(s) with %d+ consecutive empty runs: %s",
-                len(skipped), _MAX_CONSECUTIVE_FAILURES, skipped,
+                len(skipped), self.max_consecutive_failures, skipped,
             )
 
         # Random subset from the remaining active targets
@@ -185,7 +187,7 @@ class RedditBrowserCollector:
                             failures[key] = 0  # reset on success
                         else:
                             failures[key] = failures.get(key, 0) + 1
-                            if failures[key] >= _MAX_CONSECUTIVE_FAILURES:
+                            if failures[key] >= self.max_consecutive_failures:
                                 logger.warning(
                                     "Target %s reached %d consecutive empty runs — "
                                     "will be excluded from future sampling.",
@@ -200,7 +202,7 @@ class RedditBrowserCollector:
                         )
                         failures[key] = failures.get(key, 0) + 1
 
-                    delay = random.uniform(_INTER_REQUEST_DELAY_MIN, _INTER_REQUEST_DELAY_MAX)
+                    delay = random.uniform(*self.inter_request_delay)
                     logger.debug("Sleeping %.1fs before next target", delay)
                     time.sleep(delay)
 

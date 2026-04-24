@@ -11,9 +11,14 @@ from src import db, opportunity_queue, render, scoring
 from src.models import AppConfig, CandidateItem, Platform
 from src.settings import (
     get_anthropic_api_key,
+    get_fetch_top_comment,
+    get_inter_request_delay,
+    get_max_consecutive_failures,
     get_max_posts_per_target,
     get_max_targets_per_run,
     get_platform_targets,
+    get_twitter_delay_seconds,
+    get_twitter_max_items_per_target,
     get_youtube_api_key,
     is_platform_enabled,
     load_platforms_config,
@@ -183,7 +188,7 @@ def _evaluate_and_queue(
     from src import decisions
 
     model = app_config.global_config.claude_model if app_config else "claude-sonnet-4-6"
-    max_tokens = app_config.global_config.claude_max_tokens if app_config else 2048
+    max_tokens = app_config.global_config.claude_max_tokens if app_config else 4096
     max_batch = app_config.global_config.max_claude_batch_size if app_config else 20
 
     batch = scored[:max_batch]
@@ -240,6 +245,8 @@ def _collect_reddit(platforms_config: dict[str, Any]) -> list[CandidateItem]:
         headless=headless,
         max_posts_per_target=max_posts,
         max_targets_per_run=max_targets,
+        inter_request_delay=get_inter_request_delay(platforms_config, "reddit"),
+        max_consecutive_failures=get_max_consecutive_failures(platforms_config, "reddit"),
     )
     return collector.collect(targets)
 
@@ -266,6 +273,8 @@ def _collect_youtube(platforms_config: dict[str, Any]) -> list[CandidateItem]:
             api_key=api_key,
             max_results=max_results,
             max_targets_per_run=max_targets,
+            fetch_top_comment=get_fetch_top_comment(platforms_config),
+            inter_request_sleep=get_inter_request_delay(platforms_config, "youtube"),
         )
     except YouTubeAPIError as exc:
         logger.error("YouTube API error (quota or key issue): %s", exc)
@@ -290,6 +299,10 @@ def _collect_twitter(
     if not targets:
         return []
 
-    # Build a minimal config-like object for the legacy collector
     queries = [t["value"] for t in targets if t.get("type") == "search"]
-    return twitter_collect(queries, bearer_token, max_per_query=10)
+    return twitter_collect(
+        queries,
+        bearer_token,
+        max_per_query=get_twitter_max_items_per_target(platforms_config),
+        delay_seconds=get_twitter_delay_seconds(platforms_config),
+    )

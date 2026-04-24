@@ -206,9 +206,6 @@ class GlobalConfig(BaseModel):
     claude_model: str = "claude-sonnet-4-6"
     claude_max_tokens: int = 4096
     reddit_request_delay_seconds: float = 1.0
-    enable_twitter: bool = False
-    twitter_request_delay_seconds: float = 2.0
-    max_items_per_search: int = 50
 
 
 class AppConfig(BaseModel):

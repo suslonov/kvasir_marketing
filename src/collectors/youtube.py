@@ -43,7 +43,6 @@ _WATCH = "https://www.youtube.com/watch?v="
 # Free tier: 10 000 units / day.
 _MAX_RESULTS_PER_QUERY = 10
 _REQUEST_TIMEOUT = 15
-_INTER_REQUEST_SLEEP = (1.5, 3.5)  # (min, max) seconds
 
 
 class YouTubeAPIError(RuntimeError):
@@ -64,13 +63,15 @@ class YouTubeCollector:
         self,
         api_key: str,
         max_results: int = _MAX_RESULTS_PER_QUERY,
-        max_targets_per_run: int = 6,
+        max_targets_per_run: int = 5,
         fetch_top_comment: bool = True,
+        inter_request_sleep: tuple[float, float] = (1.5, 3.5),
     ) -> None:
         self.api_key = api_key
         self.max_results = max_results
         self.max_targets_per_run = max_targets_per_run
         self.fetch_top_comment = fetch_top_comment
+        self.inter_request_sleep = inter_request_sleep
         self._client = httpx.Client(timeout=_REQUEST_TIMEOUT)
 
     # ── Public interface ──────────────────────────────────────────────────────
@@ -93,7 +94,7 @@ class YouTubeCollector:
                 raise
             except Exception as exc:
                 logger.warning("YouTube target %r failed: %s", target.get("value"), exc)
-            _sleep()
+            _sleep(self.inter_request_sleep)
 
         return results
 
@@ -297,7 +298,9 @@ def collect(
     targets: list[dict[str, Any]],
     api_key: str = "",
     max_results: int = _MAX_RESULTS_PER_QUERY,
-    max_targets_per_run: int = 6,
+    max_targets_per_run: int = 5,
+    fetch_top_comment: bool = True,
+    inter_request_sleep: tuple[float, float] = (1.5, 3.5),
     **kwargs: Any,
 ) -> list[CandidateItem]:
     if not api_key:
@@ -307,9 +310,11 @@ def collect(
         api_key=api_key,
         max_results=max_results,
         max_targets_per_run=max_targets_per_run,
+        fetch_top_comment=fetch_top_comment,
+        inter_request_sleep=inter_request_sleep,
     )
     return collector.collect(targets)
 
 
-def _sleep() -> None:
-    time.sleep(random.uniform(*_INTER_REQUEST_SLEEP))
+def _sleep(inter_request_sleep: tuple[float, float] = (1.5, 3.5)) -> None:
+    time.sleep(random.uniform(*inter_request_sleep))

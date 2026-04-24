@@ -58,6 +58,11 @@ subreddits:
     enabled: true
   - name: puzzles
     enabled: true
+  # Russian-language communities
+  - name: ru
+    enabled: true
+  - name: RussianLiterature
+    enabled: true
 
 twitter_searches:
   # Books / reading discovery
@@ -73,7 +78,7 @@ twitter_searches:
     enabled: true
   # Teaching / classroom
   - query: "AI classroom tool OR EdTech reading OR book quiz for students"
-    enabled: true
+    enabled: false
 
 include_keywords:
   # Core Quizly topics
@@ -107,6 +112,22 @@ include_keywords:
   - tabletop game
   - quiz night
   - pub quiz
+  # Russian keywords
+  - книга
+  - книги
+  - книжный клуб
+  - литература
+  - чтение
+  - читать
+  - что почитать
+  - классика
+  - обсуждение книг
+  - рекомендации книг
+  - квиз
+  - данетки
+  - викторина
+  - интерактивное обучение
+  - ИИ для
 
 exclude_keywords:
   - porn

@@ -8,6 +8,21 @@ platforms:
     headless: true
     max_posts_per_target: 12
     max_targets_per_run: 8   # random sample size per pipeline run
+    inter_request_delay_min: 2.0   # seconds — random sleep between targets
+    inter_request_delay_max: 5.0
+    max_consecutive_failures: 3    # exclude target after this many empty runs in a row
+    discovery:
+      enabled: true
+      inter_request_delay_min: 2.0
+      inter_request_delay_max: 4.0
+      min_subscribers: 5000
+      queries:
+        - "books reading literature"
+        - "ai learning education"
+        - "quiz trivia games"
+        - "classic literature"
+        - "book recommendations"
+        - "interactive learning"
     targets:
       - type: subreddit:hot
         value: books
@@ -54,6 +69,7 @@ platforms:
     enabled: false
     collector: twitter
     max_items_per_target: 10
+    delay_seconds: 2.0             # sleep between query requests
     targets:
       - type: search
         value: "AI books quiz"
@@ -69,6 +85,9 @@ platforms:
     collector: youtube
     max_posts_per_target: 10     # videos per search query
     max_targets_per_run: 5       # random sample per pipeline run
+    inter_request_sleep_min: 1.5 # seconds — random sleep between API calls
+    inter_request_sleep_max: 3.5
+    fetch_top_comment: true      # fetch top comment for each video (costs 1 quota unit each)
     targets:
       # Book / reading discussions
       - type: video_search

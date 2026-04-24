@@ -74,6 +74,46 @@ def is_headless(platforms_cfg: dict[str, Any], platform: str = "reddit") -> bool
     return bool(p.get("headless", True))
 
 
+def get_inter_request_delay(
+    platforms_cfg: dict[str, Any], platform: str = "reddit"
+) -> tuple[float, float]:
+    """Return (min_seconds, max_seconds) random sleep range between requests."""
+    p = platforms_cfg.get("platforms", {}).get(platform, {})
+    if platform == "youtube":
+        lo = float(p.get("inter_request_sleep_min", 1.5))
+        hi = float(p.get("inter_request_sleep_max", 3.5))
+    else:
+        lo = float(p.get("inter_request_delay_min", 2.0))
+        hi = float(p.get("inter_request_delay_max", 5.0))
+    return lo, hi
+
+
+def get_max_consecutive_failures(platforms_cfg: dict[str, Any], platform: str = "reddit") -> int:
+    p = platforms_cfg.get("platforms", {}).get(platform, {})
+    return int(p.get("max_consecutive_failures", 3))
+
+
+def get_fetch_top_comment(platforms_cfg: dict[str, Any]) -> bool:
+    p = platforms_cfg.get("platforms", {}).get("youtube", {})
+    return bool(p.get("fetch_top_comment", True))
+
+
+def get_twitter_delay_seconds(platforms_cfg: dict[str, Any]) -> float:
+    p = platforms_cfg.get("platforms", {}).get("twitter", {})
+    return float(p.get("delay_seconds", 2.0))
+
+
+def get_twitter_max_items_per_target(platforms_cfg: dict[str, Any]) -> int:
+    p = platforms_cfg.get("platforms", {}).get("twitter", {})
+    return int(p.get("max_items_per_target", 10))
+
+
+def get_discovery_config(platforms_cfg: dict[str, Any]) -> dict[str, Any]:
+    """Return the reddit.discovery sub-config dict (or safe defaults)."""
+    p = platforms_cfg.get("platforms", {}).get("reddit", {})
+    return p.get("discovery", {})
+
+
 # ── Path helpers (read from sources.yaml, not env) ────────────────────────────
 
 def get_db_path(app_config: Optional[AppConfig] = None) -> Path:

@@ -31,8 +31,11 @@ PLATFORMS_PATH = CONFIG_DIR / "platforms.yaml"
 logging.basicConfig(level=logging.INFO, format="%(levelname)s %(message)s")
 logger = logging.getLogger(__name__)
 
-# Search queries for subreddit discovery
-_DISCOVERY_QUERIES = [
+_REDDIT_BASE = "https://www.reddit.com"
+_NAV_TIMEOUT_MS = 20_000
+
+# Defaults — overridden by platforms.yaml reddit.discovery section
+_DEFAULT_DISCOVERY_QUERIES = [
     "books reading literature",
     "ai learning education",
     "quiz trivia games",
@@ -40,10 +43,9 @@ _DISCOVERY_QUERIES = [
     "book recommendations",
     "interactive learning",
 ]
-
-_MIN_SUBSCRIBERS = 5_000
-_REDDIT_BASE = "https://www.reddit.com"
-_NAV_TIMEOUT_MS = 20_000
+_DEFAULT_MIN_SUBSCRIBERS = 5_000
+_DEFAULT_DELAY_MIN = 2.0
+_DEFAULT_DELAY_MAX = 4.0
 
 
 def _load_existing_known(platforms_path: Path, discovered_path: Path) -> set[str]:
@@ -95,11 +97,24 @@ def _extract_subreddits_from_page(page: Any) -> list[dict]:
     return results
 
 
+def _load_discovery_config() -> dict:
+    """Return the reddit.discovery block from platforms.yaml (or empty dict)."""
+    if PLATFORMS_PATH.exists():
+        data = yaml.safe_load(PLATFORMS_PATH.read_text(encoding="utf-8")) or {}
+        return data.get("platforms", {}).get("reddit", {}).get("discovery", {})
+    return {}
+
+
 def discover_subreddits(headless: bool = True, dry_run: bool = False) -> list[dict]:
     """
     Use Playwright to search Reddit for new subreddits.
     Returns list of new subreddit dicts suitable for discovered_subreddits.yaml.
     """
+    disc_cfg = _load_discovery_config()
+    queries: list[str] = disc_cfg.get("queries", _DEFAULT_DISCOVERY_QUERIES)
+    delay_min: float = float(disc_cfg.get("inter_request_delay_min", _DEFAULT_DELAY_MIN))
+    delay_max: float = float(disc_cfg.get("inter_request_delay_max", _DEFAULT_DELAY_MAX))
+
     profile_dir = _load_profile_dir()
     if not profile_dir.exists():
         logger.warning(
@@ -134,7 +149,7 @@ def discover_subreddits(headless: bool = True, dry_run: bool = False) -> list[di
             page = context.new_page()
             page.set_default_timeout(_NAV_TIMEOUT_MS)
 
-            for query in _DISCOVERY_QUERIES:
+            for query in queries:
                 encoded = query.replace(" ", "+")
                 url = f"{_REDDIT_BASE}/search/?q={encoded}&type=sr&sort=relevance"
                 logger.info("Searching: %s", url)
@@ -158,7 +173,7 @@ def discover_subreddits(headless: bool = True, dry_run: bool = False) -> list[di
                 logger.info("Query %r → %d new subreddits", query, new_count)
 
                 import time, random
-                time.sleep(random.uniform(2.0, 4.0))
+                time.sleep(random.uniform(delay_min, delay_max))
 
         finally:
             context.close()

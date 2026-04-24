@@ -17,6 +17,10 @@ _QUIZLY_ANGLES = [
     "book summary", "ai tools for", "interactive learning",
     "ai tutor", "ai game", "edtech", "homeschool", "book club",
     "suggest.*book", "what.*read", "how.*learn", "resources.*for",
+    # Russian
+    "книг", "литератур", "чтени", "читать", "что почитать",
+    "классик", "обсуждени", "рекомендаци", "квиз", "викторин",
+    "книжный клуб", "интерактивн", "ИИ",
 ]
 
 _COMPILED_ANGLES = [re.compile(p, re.IGNORECASE) for p in _QUIZLY_ANGLES]
