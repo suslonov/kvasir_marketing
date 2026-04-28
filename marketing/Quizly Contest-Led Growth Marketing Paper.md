@@ -6,7 +6,7 @@ The strongest conclusion from the repository and the live site is that Quizly sh
 
 The fastest route is a staged launch. First, fix the homepage, brand naming, share mechanics, and winner visibility. Second, launch **text quiz contests** built on titles already live on Quizly. Third, add **visual contests** that generate highly shareable assets. Fourth, launch **short video contests** and feature the best video directly on the related book page, so contest output becomes evergreen product content rather than a one-off social post. This sequence fits the live site, the repo’s contest suggestions, and the internal book-catalog language that already links books, AI discussion, video generation, and contests. citeturn18view1turn3view0turn16view0
 
-The most useful lesson to adapt from the entity["organization","StartupHub","startup media"] article about entity["company","Sinai.ai","ai books startup"] is not “AI books” as a category slogan. It is the product logic underneath: make reading interactive rather than passive, make it multimodal rather than text-only, and stay rights-conscious rather than casually scraping or remixing copyrighted material. Reframed for Quizly, that becomes: **public-domain or rights-cleared books + contest formats + winning artifacts featured on book pages**. citeturn1search2turn19view1turn19view0turn19view2
+The most useful lesson to adapt from the entity["organization","StartupHub","startup media"] article about entity["company","xxxxx.ai","ai books startup"] is not “AI books” as a category slogan. It is the product logic underneath: make reading interactive rather than passive, make it multimodal rather than text-only, and stay rights-conscious rather than casually scraping or remixing copyrighted material. Reframed for Quizly, that becomes: **public-domain or rights-cleared books + contest formats + winning artifacts featured on book pages**. citeturn1search2turn19view1turn19view0turn19view2
 
 The good news is that the existing repo already contains most of the operating system required for this plan: positioning work, audience/channel research, influencer templates, contest/title ideas, a review-first social scanner, an opportunity queue, a syncable book catalog, and an analytics digest concept. The opportunity is not to invent a new marketing stack. It is to **retarget the existing stack around contest campaigns**. citeturn4view1turn10view0turn11view1turn14view0turn17view0turn17view1
 
@@ -14,7 +14,7 @@ Assumptions used throughout this paper: an English-first launch, adults 18+ for 
 
 ## Source synthesis
 
-The source set breaks into three layers: strategy documents in the entity["company","GitHub","developer platform"] repo’s marketing folder, supporting repo files that define the agent/automation model, and the StartupHub/Sinai reporting that suggests how Quizly can extend from text contests into multimodal book experiences. citeturn0view0turn1search2turn19view0turn19view1
+The source set breaks into three layers: strategy documents in the entity["company","GitHub","developer platform"] repo’s marketing folder, supporting repo files that define the agent/automation model, and the StartupHub/xxxxx reporting that suggests how Quizly can extend from text contests into multimodal book experiences. citeturn0view0turn1search2turn19view0turn19view1
 
 ### Files reviewed
 
@@ -29,9 +29,9 @@ The source set breaks into three layers: strategy documents in the entity[
 | `marketing/influencers/search_results.md`; `marketing/influencers/outreach_templates.md` | The repo already has a 100-contact creator list plus short, personalized outreach templates for book creators, aesthetic creators, and literary organizations. citeturn7view1turn7view0 | It makes micro-creator seeding immediately executable instead of hypothetical. |
 | `CLAUDE.md`; `MODIFICATION_PLAN.md`; `src/pipeline.py`; `config/platforms.yaml`; `config/book_catalog.yaml`; `scripts/update_book_catalog.py` | These files define a review-first scanner and opportunity queue, with Reddit and YouTube collection enabled on a 10-minute schedule, optional X support, title/author matching through a book catalog, and a pipeline that dedupes, scores, classifies, queues, and renders an HTML review inbox. The book-catalog CTA explicitly mentions reading the book, discussing it with AI, generating a video, and joining contests. citeturn10view0turn11view1turn14view0turn17view0turn16view0turn17view1 | They make the repo’s automation genuinely useful for contest-led growth, especially for title-specific discovery, creator outreach, and book-page media extensions. |
 
-### Adapted ideas from StartupHub and Sinai
+### Adapted ideas from StartupHub and xxxxx
 
-The concepts below are **adapted and rephrased**, not copied. They keep the underlying product logic from the StartupHub/Sinai coverage while translating it into a practical Quizly growth model. citeturn1search2turn19view0turn19view1turn19view2
+The concepts below are **adapted and rephrased**, not copied. They keep the underlying product logic from the StartupHub/xxxxx coverage while translating it into a practical Quizly growth model. citeturn1search2turn19view0turn19view1turn19view2
 
 | Reported concept in the coverage | Adapted Quizly move | What to keep and what to avoid |
 |---|---|---|
@@ -62,13 +62,13 @@ For the first wave, use current on-platform titles such as entity["book","
 |---|---|---|---|---|
 | First | **Text quiz contest** | A weekly featured book gets one daily 5-question quiz for broad participation, plus one tie-breaker open prompt for “editor’s pick” answers. Result cards are instantly shareable, and the best text answer becomes a featured annotation on the book page. | This is the fastest path because the repo already prioritizes daily challenge loops and share cards, and the current site already has live contests and grounded book-chat mechanics. citeturn3view1turn18view1 | 5–7 days to launch once hero/share instrumentation is ready. |
 | Second | **Visual contest** | “Quote-to-poster” or “scene-as-cover” challenges based on the featured title. Entrants submit one image plus a short creator note explaining the interpretation. Winners populate a gallery on the contest page and the related book page. | Visuals add stronger social spread than text, but they require more moderation and clearer IP controls. They should follow text once the submission and winner flow is proven. citeturn3view0turn18view1 | 7–12 days after text launch. |
-| Third | **Video contest** | One 30–60 second vertical video: reaction, argument, reenactment, explainer, or screen-recorded AI interaction around the featured title. The best video becomes the permanent “Watch the best take” panel on the book page. | Video has the highest upside for organic reach and aligns most closely with the multimodal lesson from Sinai, but it also has the highest production friction and rights/moderation risk. citeturn19view1turn19view0turn16view0 | 10–18 days after text launch. |
+| Third | **Video contest** | One 30–60 second vertical video: reaction, argument, reenactment, explainer, or screen-recorded AI interaction around the featured title. The best video becomes the permanent “Watch the best take” panel on the book page. | Video has the highest upside for organic reach and aligns most closely with the multimodal lesson from xxxxx, but it also has the highest production friction and rights/moderation risk. citeturn19view1turn19view0turn16view0 | 10–18 days after text launch. |
 
 A good naming system is more important than a large menu. The simplest working taxonomy is: **Book Duel** for text, **Quote to Poster** for visual, and **Best Take** for video. That keeps the system legible across site cards, creator outreach, and social posts.
 
 ### Best video to books module
 
-A winning video should not vanish inside a social feed. It should be promoted to a durable module on the book page with four parts: the video itself, a transcript, a spoiler flag, and a CTA to make a competing version. That move directly adapts the multimodal-book logic from the Sinai coverage, and it is also consistent with the repo’s own internal book-catalog wording, which already describes a book experience that combines reading, AI discussion, video, and contests. citeturn19view1turn19view0turn16view0
+A winning video should not vanish inside a social feed. It should be promoted to a durable module on the book page with four parts: the video itself, a transcript, a spoiler flag, and a CTA to make a competing version. That move directly adapts the multimodal-book logic from the xxxxx coverage, and it is also consistent with the repo’s own internal book-catalog wording, which already describes a book experience that combines reading, AI discussion, video, and contests. citeturn19view1turn19view0turn16view0
 
 | Module field | Recommendation |
 |---|---|

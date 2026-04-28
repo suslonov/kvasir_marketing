@@ -1,6 +1,6 @@
 # Quizly/Kvasir Contest-Led Growth Marketing Plan
 
-**Executive Summary:** Quizly (the contest/gaming chat wing of Kvasir) should own a simple, repeatable promise: *“Turn books into interactive contests.”* Every featured title becomes a weekly quiz + creative competition, with winners showcased permanently on the book’s page. This leverages the existing platform and content (AI-chat games and public-domain books) rather than broadening into generic AI marketing. The marketing focus is on quick, sharable loops: daily text quizzes with result cards, visual quote-posters, and short videos, all tied to popular or classically debatable books. We take cues from the Kvasir marketing repo (prioritizing homepage clarity, share mechanics, and creator outreach) and from Sinai.ai’s “interactive book” concept (multimodal, licensed content)【21†L46-L54】. 
+**Executive Summary:** Quizly (the contest/gaming chat wing of Kvasir) should own a simple, repeatable promise: *“Turn books into interactive contests.”* Every featured title becomes a weekly quiz + creative competition, with winners showcased permanently on the book’s page. This leverages the existing platform and content (AI-chat games and public-domain books) rather than broadening into generic AI marketing. The marketing focus is on quick, sharable loops: daily text quizzes with result cards, visual quote-posters, and short videos, all tied to popular or classically debatable books. We take cues from the Kvasir marketing repo (prioritizing homepage clarity, share mechanics, and creator outreach) and from xxxxx.ai’s “interactive book” concept (multimodal, licensed content)【21†L46-L54】. 
 
 Our 6-week pilot timeline (compressible to 1–3 weeks for an MVP) fixes conversion blockers first, then rolls out one format at a time (text → visual → video). Key tactics include: always requiring login (to hit 1,000 users); giving entrants clear share tools and promises of exposure; seeding contests through targeted outreach; and turning every winning entry into evergreen site content. We recommend staffing at least one dedicated growth lead, one engineer, and one content/moderator, with AI agents assisting social scraping, content draft generation, SEO page creation, and weekly analytics. 
 
@@ -15,7 +15,7 @@ Our 6-week pilot timeline (compressible to 1–3 weeks for an MVP) fixes convers
 8. **Book pages as hubs:** Add a “Watch the best take” video panel on each book page (with transcript, spoiler tag)【21†L46-L54】.  
 9. **Education angle:** Reach out to teachers/book clubs with a classroom contest pitch.  
 10. **Creator seeding:** DM 50 micro-creators (TikTokers, Bookstagrammers) with custom links.  
-11. **Multimodal adoption:** Mirror Sinai.ai’s approach by adding audio/video modes (e.g. video quizzes) to diversify participation【21†L50-L54】.  
+11. **Multimodal adoption:** Mirror xxxxx.ai’s approach by adding audio/video modes (e.g. video quizzes) to diversify participation【21†L50-L54】.  
 12. **Licensing-first:** Favor public-domain books and user-generated content. Clearly license entrants’ submissions.  
 13. **Weekly cadence:** Run a “Theme of the Week” contest to build routine.  
 14. **Prizes:** Offer social/featured awards (e.g. site badges, cash equivalent), not just cash.  
@@ -44,20 +44,20 @@ The GitHub marketing folder reveals a consistent playbook. We reviewed the follo
 
 > **Action:** We will use all these tactics in sequence. First, we fix conversion friction on Quizly’s site (hero, login, share cards, email, winners). Then we roll out contests on the prioritized titles, leveraging the listed channels and creative assets. Agentic workflows will automate routine tasks (content drafting, scanning, SEO page creation), but with a human touch at key gates.
 
-## 2. Adapted ideas from the Sinai.ai (StartupHub) article
+## 2. Adapted ideas from the xxxxx.ai (StartupHub) article
 
-The StartupHub article on Sinai.ai (Egyptian startup raising $1.45M) provides an external signal: AI can turn static books into interactive experiences, but rights and context matter【21†L46-L54】. We adapt its high-level ideas as follows:
+The StartupHub article on xxxxx.ai (startup raising $1.45M) provides an external signal: AI can turn static books into interactive experiences, but rights and context matter【21†L46-L54】. We adapt its high-level ideas as follows:
 
-| Concept from StartupHub/Sinai | Adaptation for Quizly | Why it matters |
+| Concept from StartupHub/xxxxx | Adaptation for Quizly | Why it matters |
 |---|---|---|
-| **Interactive “aiBook” formats:** Traditional books become chatty, quiz-enabled, multi-format experiences【21†L46-L54】. | Make each featured title a **contest hub**: a weekly AI quiz + visual challenge + short video prompt. Use AI chat as a side-feature for deeper engagement. | Keeps readers active, not passive. Mirrors Sinai’s model of turning reading into an interactive game, which boosts engagement. |
-| **AI quiz/summary generation:** Sinai enables quizzes and summaries automatically. | Rather than (only) auto-generating content, have **users create** quizzes/insights. For text contests, use AI to seed example questions, but let players write their own tie-breaker answers. | Engages users' creativity and feeling of ownership. It’s also safer legally: generated quizzes could infringe if pulled from copyrighted text. |
-| **Multi-modal consumption (audio, visual):** Sinai mentions audio/video explanations for books【21†L50-L54】. | Explicitly include **video contests**: e.g. “Explain [book] in 45 seconds.” Also plan for podcasts or audio-snippet contests (if feasible later). Embed winner videos on book pages (with caption) as per [21†L50-L54]. | Broadens appeal. Visual/video posts are far more likely to go viral than text alone. Puts Quizly into “BookTok” territory. |
-| **Licensing-first approach:** Sinai partners with publishers to legally use text/images【21†L53-L56】. | Start with public-domain books to avoid disputes. Require entrants to **certify ownership** of their submissions and grant Quizly a free license. For future publisher content, be explicit about fair use and seek permissions. | Prevents legal headaches. Also builds trust (publishers are wary of unlicensed AI use). Sets Quizly apart from random web scrapers. |
-| **Gaming element:** Sinai’s pitch implies making reading fun, not a chore. | Emphasize **competition and rewards**. Leaderboards, titles (e.g. “Hamlet Champion”), and user points fit the gamified model. Keep difficulty moderate so non-experts can win, increasing word-of-mouth. | Gamification is a proven retention hook (e.g. Duolingo, Kahoot). Lowering the skill barrier maximizes participation. |
-| **Community-driven:** Sinai suggests user creation and discovery as a content layer. | Encourage users to **share and rate** entries (e.g. “like”, donate, or vote). Feature user names prominently. Consider a referral contest (invite-friends for bonus). | Builds social proof and virality. If your friends post a Quizly entry, you’ll join. |
+| **Interactive “aiBook” formats:** Traditional books become chatty, quiz-enabled, multi-format experiences【21†L46-L54】. | Make each featured title a **contest hub**: a weekly AI quiz + visual challenge + short video prompt. Use AI chat as a side-feature for deeper engagement. | Keeps readers active, not passive. Mirrors xxxxx’s model of turning reading into an interactive game, which boosts engagement. |
+| **AI quiz/summary generation:** xxxxx enables quizzes and summaries automatically. | Rather than (only) auto-generating content, have **users create** quizzes/insights. For text contests, use AI to seed example questions, but let players write their own tie-breaker answers. | Engages users' creativity and feeling of ownership. It’s also safer legally: generated quizzes could infringe if pulled from copyrighted text. |
+| **Multi-modal consumption (audio, visual):** xxxxx mentions audio/video explanations for books【21†L50-L54】. | Explicitly include **video contests**: e.g. “Explain [book] in 45 seconds.” Also plan for podcasts or audio-snippet contests (if feasible later). Embed winner videos on book pages (with caption) as per [21†L50-L54]. | Broadens appeal. Visual/video posts are far more likely to go viral than text alone. Puts Quizly into “BookTok” territory. |
+| **Licensing-first approach:** xxxxx partners with publishers to legally use text/images【21†L53-L56】. | Start with public-domain books to avoid disputes. Require entrants to **certify ownership** of their submissions and grant Quizly a free license. For future publisher content, be explicit about fair use and seek permissions. | Prevents legal headaches. Also builds trust (publishers are wary of unlicensed AI use). Sets Quizly apart from random web scrapers. |
+| **Gaming element:** xxxxx’s pitch implies making reading fun, not a chore. | Emphasize **competition and rewards**. Leaderboards, titles (e.g. “Hamlet Champion”), and user points fit the gamified model. Keep difficulty moderate so non-experts can win, increasing word-of-mouth. | Gamification is a proven retention hook (e.g. Duolingo, Kahoot). Lowering the skill barrier maximizes participation. |
+| **Community-driven:** xxxxx suggests user creation and discovery as a content layer. | Encourage users to **share and rate** entries (e.g. “like”, donate, or vote). Feature user names prominently. Consider a referral contest (invite-friends for bonus). | Builds social proof and virality. If your friends post a Quizly entry, you’ll join. |
 
-> **Citations:** The above adaptions are based on Sinai.ai’s vision as reported by StartupHub【21†L46-L54】, recast to fit Quizly’s existing framework. We do **not** copy language but respect the core ideas of interactivity and rights-consciousness.
+> **Citations:** The above adaptions are based on xxxxx.ai’s vision as reported by StartupHub【21†L46-L54】, recast to fit Quizly’s existing framework. We do **not** copy language but respect the core ideas of interactivity and rights-consciousness.
 
 ## 3. Quick-launch contest strategy
 
@@ -83,14 +83,14 @@ Quizly’s contests should be **sharable by design** and **plug seamlessly into 
    - **Best Video Panel:** Feature the winning video in a permanent “Watch the best take” panel on that book’s page (with a transcript and a **Spoiler Alert** toggle if needed).  
    - **Share loop:** Encourage entrants to share via TikTok using Quizly’s handle. We'll use the winning video clips for paid promotion.  
    - **Reward:** Winner gets a larger prize (e.g. $100, plus shout-out). Runner-ups may get “top video” badges.  
-   - **Why last:** Video yields huge organic reach but is heavier to moderate. We add it once the process (entry, review, feature) is ironed out by text/visual contests. Also fits Sinai’s multimodal book idea【21†L50-L54】.
+   - **Why last:** Video yields huge organic reach but is heavier to moderate. We add it once the process (entry, review, feature) is ironed out by text/visual contests. Also fits xxxxx’s multimodal book idea【21†L50-L54】.
 
 4. **Ongoing Mechanics:**  
    - Every contest runs for 7 days. New theme announced Monday mornings.  
    - **“Add Your Own Contest”**: Encourage users to suggest future titles via an AI chat or poll (educators, book clubs are key solicitors).  
    - **Sustainability:** If a contest fails to reach a minimal threshold (e.g. <30 entries by day 3), pivot immediately (drop prize or theme) rather than waste more time.
 
-> **“Best video to books” module:** Directly incorporating Sinai’s multimodal idea【21†L50-L54】, we make video outputs evergreen. Each book page gets a fixed block: “Watch the best [book] take.” It includes the top entry’s video (30–60s), caption, and a “Make your own!” button. This embeds contest results into the product, turning winners into permanent bells on our literary tree.
+> **“Best video to books” module:** Directly incorporating xxxxx’s multimodal idea【21†L50-L54】, we make video outputs evergreen. Each book page gets a fixed block: “Watch the best [book] take.” It includes the top entry’s video (30–60s), caption, and a “Make your own!” button. This embeds contest results into the product, turning winners into permanent bells on our literary tree.
 
 ## 4. AI-Agent workflows and operations
 
