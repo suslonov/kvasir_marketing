@@ -5,7 +5,9 @@ Requires:
     YOUTUBE_API_KEY  environment variable (Google Cloud project with YouTube Data API enabled)
 
 Supported target types (configured in platforms.yaml):
-    video_search   — search for videos matching a query string
+    video_search   — search for videos matching ``value`` (query string).
+                     Optional keys: ``relevance_language`` (ISO 639-1, default ``en``),
+                     ``region_code`` (ISO 3166-1 alpha-2, e.g. ``RU``).
     channel        — recent uploads from a specific channel ID or handle
 
 For each video found the collector returns a CandidateItem where:
@@ -104,7 +106,7 @@ class YouTubeCollector:
         t = target.get("type", "")
         value = target.get("value", "")
         if t == "video_search":
-            return self._search_videos(value)
+            return self._search_videos(target)
         if t == "channel":
             return self._channel_videos(value)
         logger.warning("Unknown YouTube target type: %s", t)
@@ -112,16 +114,27 @@ class YouTubeCollector:
 
     # ── video_search ──────────────────────────────────────────────────────────
 
-    def _search_videos(self, query: str) -> list[CandidateItem]:
-        params = {
+    def _search_videos(self, target: dict[str, Any]) -> list[CandidateItem]:
+        query = (target.get("value") or "").strip()
+        if not query:
+            return []
+
+        rel_lang = (target.get("relevance_language") or target.get("relevanceLanguage") or "en").strip()
+        region = target.get("region_code") or target.get("regionCode")
+        region_s = region.strip() if isinstance(region, str) else ""
+
+        params: dict[str, Any] = {
             "part": "snippet",
             "q": query,
             "type": "video",
             "maxResults": self.max_results,
             "order": "relevance",
-            "relevanceLanguage": "en",
+            "relevanceLanguage": rel_lang,
             "safeSearch": "moderate",
         }
+        if region_s:
+            params["regionCode"] = region_s
+
         data = self._get("search", params)
         items = data.get("items", [])
         if not items:

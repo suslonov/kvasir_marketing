@@ -299,26 +299,26 @@ Include relevant hashtags (e.g. #BookTok, #AIQuiz, #Education). Use platform-spe
 
 ## 11. Detailed checklist (Google-Keep–style)
 
-- [ ] **Update homepage hero:** Use Quizly branding and concise value (“Play AI games and win creative book contests”). *Why:* Clearer first impression drives signups.  
-- [ ] **Enable Google login & email opt-in:** Replace anonymous mode; require signup before contest entry. *Why:* Login gates ensure we count actual users.  
-- [ ] **Implement share cards:** Create result/poster image templates and “Share” buttons for quiz answers and contest entries. *Why:* Viral growth depends on easy sharing.  
-- [ ] **Create first quiz (Hamlet):** Write 5 quiz questions + 1 tie-breaker prompt; set 1-week window. *Why:* Needed to start viral loop.  
-- [ ] **Design an example poster:** Provide one sample for visual contest instructions. *Why:* Lowers entry friction.  
-- [ ] **Add “winner announcement” module:** Put placeholder on homepage and Hamlet page for upcoming winners. *Why:* Social proof (even “?? entrants, winners next week”).  
-- [ ] **Write contest rules:** Publish simple rules page (eligibility, prizes, IP clause). *Why:* Legal compliance and trust.  
-- [ ] **Prepare social content:** Pre-schedule initial TikToks, Reels, Reddit posts announcing the contest. *Why:* Burst of visibility at launch.  
-- [ ] **Seed creators/teachers:** Send personalized messages to relevant influencers/educators with contest links. *Why:* Kickstart network effect.  
-- [ ] **Activate agents:** Configure platforms.yaml and book_catalog for the featured title; start scanner. *Why:* Catch organic mentions to engage communities.  
-- [ ] **Daily operations:** Each day post 1 new social snippet (text/image/video), respond to all comments, feature one user submission on social. *Why:* Maintains engagement momentum.  
-- [ ] **Monitor dashboard:** Check funnel metrics nightly (especially start and completion rates). Tweak quiz difficulty or page copy if conversion is low. *Why:* Rapid improvement ensures scale success.  
-- [ ] **Mid-week check:** If week1 target (<300 users) is not on track, double outreach effort (more DMs, Reddit posts) and try a micro-ad ($5) on one creative. *Why:* Early course-correction.  
-- [ ] **Launch visual contest (Week 2):** Mirror steps: write prompt, open entries, add shareable image template. *Why:* Refreshes interest and content variety.  
-- [ ] **Collect entries for winners:** Use Google Sheets/form or Quizly backend to tally quiz scores and gather submissions by deadline. *Why:* Organize judging easily.  
-- [ ] **Announce winners:** Post winners on all channels with thank-you note and teaser for next contest. *Why:* Closure and excitement for next round.  
-- [ ] **Embed winning video:** If video contest done, edit winner clip into book page with credit. *Why:* Evergreening content from social traffic.  
-- [ ] **Repeat contest cycle:** Immediately open next text quiz on new title. *Why:* Capitalize on established users and channels.  
-- [ ] **Weekly review:** Each weekend, review KPI dashboard and qualitative feedback. Drop or pivot any element underperforming. *Why:* Data-driven iteration.  
-- [ ] **Document lessons:** Keep a log of what marketing copy and angles got the most engagement. *Why:* Refine briefs and agent prompts for better results.  
+- [x] 1. **Update homepage hero:** Use Quizly branding and concise value (“Play AI games and win creative book contests”). *Why:* Clearer first impression drives signups.  
+- [x] 2. **Enable Google login & email opt-in:** Replace anonymous mode; require signup before contest entry. *Why:* Login gates ensure we count actual users.  
+- [x] 3. **Implement share cards:** Create result/poster image templates and “Share” buttons for quiz answers and contest entries. *Why:* Viral growth depends on easy sharing.  
+- [ ] 4. **Create first quiz (Hamlet):** Write 5 quiz questions + 1 tie-breaker prompt; set 1-week window. *Why:* Needed to start viral loop.  
+- [ ] 5. **Design an example poster:** Provide one sample for visual contest instructions. *Why:* Lowers entry friction.  
+- [ ] 6. **Add “winner announcement” module:** Put placeholder on homepage and Hamlet page for upcoming winners. *Why:* Social proof (even “?? entrants, winners next week”).  
+- [ ] 7. **Write contest rules:** Publish simple rules page (eligibility, prizes, IP clause). *Why:* Legal compliance and trust.  
+- [ ] 8. **Prepare social content:** Pre-schedule initial TikToks, Reels, Reddit posts announcing the contest. *Why:* Burst of visibility at launch.  
+- [ ] 9. **Seed creators/teachers:** Send personalized messages to relevant influencers/educators with contest links. *Why:* Kickstart network effect.  
+- [ ] 10. **Activate agents:** Configure platforms.yaml and book_catalog for the featured title; start scanner. *Why:* Catch organic mentions to engage communities.  
+- [ ] 11. **Daily operations:** Each day post 1 new social snippet (text/image/video), respond to all comments, feature one user submission on social. *Why:* Maintains engagement momentum.  
+- [ ] 12. **Monitor dashboard:** Check funnel metrics nightly (especially start and completion rates). Tweak quiz difficulty or page copy if conversion is low. *Why:* Rapid improvement ensures scale success.  
+- [ ] 13. **Mid-week check:** If week1 target (<300 users) is not on track, double outreach effort (more DMs, Reddit posts) and try a micro-ad ($5) on one creative. *Why:* Early course-correction.  
+- [ ] 14. **Launch visual contest (Week 2):** Mirror steps: write prompt, open entries, add shareable image template. *Why:* Refreshes interest and content variety.  
+- [ ] 15. **Collect entries for winners:** Use Google Sheets/form or Quizly backend to tally quiz scores and gather submissions by deadline. *Why:* Organize judging easily.  
+- [ ] 16. **Announce winners:** Post winners on all channels with thank-you note and teaser for next contest. *Why:* Closure and excitement for next round.  
+- [ ] 17. **Embed winning video:** If video contest done, edit winner clip into book page with credit. *Why:* Evergreening content from social traffic.  
+- [ ] 18. **Repeat contest cycle:** Immediately open next text quiz on new title. *Why:* Capitalize on established users and channels.  
+- [ ] 19. **Weekly review:** Each weekend, review KPI dashboard and qualitative feedback. Drop or pivot any element underperforming. *Why:* Data-driven iteration.  
+- [ ] 20. **Document lessons:** Keep a log of what marketing copy and angles got the most engagement. *Why:* Refine briefs and agent prompts for better results.  
 
 Each checklist task should be ticked off and passed along to the relevant team member as we go. This granular plan ensures we hit the 1,000-user goal by creating urgency and accountability.
 

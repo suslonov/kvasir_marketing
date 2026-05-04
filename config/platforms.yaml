@@ -110,3 +110,28 @@ platforms:
         value: "literary quiz trivia books"
       - type: video_search
         value: "book trivia challenge"
+      # Russian-language (relevance_language + region bias results toward RU creators)
+      - type: video_search
+        value: "что почитать книги рекомендации"
+        relevance_language: ru
+        region_code: RU
+      - type: video_search
+        value: "русская литература классика обсуждение"
+        relevance_language: ru
+        region_code: RU
+      - type: video_search
+        value: "книжный клуб литература видеоблог"
+        relevance_language: ru
+        region_code: RU
+      - type: video_search
+        value: "ИИ чтение книги приложение искусственный интеллект"
+        relevance_language: ru
+        region_code: RU
+      - type: video_search
+        value: "литературная викторина квиз по книгам"
+        relevance_language: ru
+        region_code: RU
+      - type: video_search
+        value: "интерактивное обучение ИИ школа книги"
+        relevance_language: ru
+        region_code: RU
