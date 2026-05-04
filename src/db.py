@@ -267,6 +267,29 @@ def get_open_queue_items(
         return [dict(r) for r in rows]
 
 
+def count_queue_items_with_status(db_path: Path, status: str) -> int:
+    with _connect(db_path) as conn:
+        row = conn.execute(
+            "SELECT COUNT(*) AS c FROM opportunity_queue WHERE status = ?",
+            (status,),
+        ).fetchone()
+        return int(row["c"]) if row else 0
+
+
+def get_expired_queue_page(
+    db_path: Path, *, limit: int = 20, offset: int = 0
+) -> list[dict]:
+    """Return expired queue rows, newest updates first."""
+    with _connect(db_path) as conn:
+        rows = conn.execute(
+            """SELECT * FROM opportunity_queue
+               WHERE status = 'expired' AND placement_type != 'skip'
+               ORDER BY updated_at DESC LIMIT ? OFFSET ?""",
+            (limit, offset),
+        ).fetchall()
+        return [dict(r) for r in rows]
+
+
 def expire_stale_items(db_path: Path, ttl_hours: int = 48) -> int:
     """Mark new/reviewed items older than ttl_hours as expired. Returns count."""
     cutoff = (datetime.utcnow() - timedelta(hours=ttl_hours)).isoformat()

@@ -96,6 +96,25 @@ def _normalize_item(item: dict[str, Any]) -> dict[str, Any]:
     return item
 
 
+normalize_queue_item = _normalize_item
+
+
+def enrich_queue_item_for_client(item: dict[str, Any]) -> dict[str, Any]:
+    """Normalize a DB queue row and add display helpers for JSON/API consumers."""
+    n = normalize_queue_item(dict(item))
+    fit = int(n.get("fit_score") or 0)
+    urg = int(n.get("urgency_score") or 0)
+    risk = int(n.get("risk_score") or 0)
+    conf = int(n.get("confidence_score") or 0)
+    n["fit_score_class"] = _score_class(fit)
+    n["urgency_score_class"] = _score_class(urg)
+    n["risk_score_class"] = _risk_class(risk)
+    n["confidence_score_class"] = _score_class(conf)
+    n["created_at_fmt"] = _fmt_date(n.get("created_at"))
+    n["last_seen_at_fmt"] = _fmt_date(n.get("last_seen_at"))
+    return n
+
+
 def _build_env(template_dir: Path) -> Environment:
     env = Environment(
         loader=FileSystemLoader(str(template_dir)),
@@ -123,6 +142,7 @@ def render_html(
     recent_runs: Optional[list[dict[str, Any]]] = None,
     # Legacy keyword (old tests pass opportunities= positional)
     opportunities: Optional[list[dict[str, Any]]] = None,
+    api_base: str = "",
     **_kwargs: Any,
 ) -> int:
     """Render queue items to a static HTML review inbox. Returns item count."""
@@ -167,6 +187,7 @@ def render_html(
         recent_runs=recent_runs,
         generated_at=generated_at,
         total_count=len(queue_items),
+        api_base=api_base,
     )
 
     output_path.write_text(html, encoding="utf-8")

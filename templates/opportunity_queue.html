@@ -53,6 +53,8 @@
     display: flex;
     align-items: center;
     justify-content: space-between;
+    flex-wrap: wrap;
+    gap: 12px;
     position: sticky;
     top: 0;
     z-index: 100;
@@ -61,15 +63,109 @@
   .header h1 span { color: var(--accent); }
   .header .meta { color: var(--muted); font-size: 12px; }
 
+  button.btn-refresh {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 6px 12px;
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    font-size: 12px;
+    font-weight: 600;
+    cursor: pointer;
+    background: var(--surface);
+    color: var(--muted);
+    font-family: inherit;
+    white-space: nowrap;
+    transition: border-color 0.12s, color 0.12s;
+  }
+  button.btn-refresh:hover:not(:disabled) {
+    border-color: var(--accent);
+    color: var(--accent);
+  }
+  button.btn-refresh:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+  }
+  button.btn-refresh svg { flex-shrink: 0; }
+
+  @keyframes spin { to { transform: rotate(360deg); } }
+  .spinning { animation: spin 0.7s linear infinite; }
+
+  .refresh-status {
+    font-size: 12px;
+    color: var(--muted);
+    max-width: 220px;
+  }
+  .refresh-status.err { color: var(--red); }
+
+  /* ── Tabs (Active / Expired) ─── */
+  .tab-bar {
+    background: var(--surface2);
+    border-bottom: 1px solid var(--border);
+    padding: 0 24px;
+    display: flex;
+    gap: 4px;
+    align-items: flex-end;
+  }
+  .tab-btn {
+    background: transparent;
+    border: none;
+    border-bottom: 2px solid transparent;
+    color: var(--muted);
+    font-size: 13px;
+    font-weight: 600;
+    padding: 10px 14px;
+    cursor: pointer;
+    font-family: inherit;
+    margin-bottom: -1px;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+  }
+  .tab-btn:hover { color: var(--text); }
+  .tab-btn.active {
+    color: var(--accent);
+    border-bottom-color: var(--accent);
+    background: var(--surface);
+    border-radius: 6px 6px 0 0;
+  }
+  .tab-count {
+    background: rgba(201, 42, 42, 0.12);
+    color: var(--red);
+    font-size: 11px;
+    font-weight: 700;
+    padding: 2px 7px;
+    border-radius: 10px;
+  }
+  .tab-btn.active .tab-count { background: var(--badge-new); color: var(--badge-new-text); }
+  .tab-panel { display: none; }
+  .tab-panel.active { display: block; }
+
   /* ── Summary bar ─── */
   .summary-bar {
     background: var(--surface);
     border-bottom: 1px solid var(--border);
     padding: 12px 24px;
     display: flex;
+    gap: 16px;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: space-between;
+  }
+  .summary-stats {
+    display: flex;
     gap: 24px;
     flex-wrap: wrap;
     align-items: center;
+    flex: 1;
+    min-width: 0;
+  }
+  .summary-toolbar {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    flex-shrink: 0;
   }
   .stat-chip {
     display: flex;
@@ -313,6 +409,7 @@
 </div>
 
 <div class="summary-bar">
+  <div class="summary-stats">
   {% set by_status = summary.get('by_status', {}) %}
   {% set by_platform = summary.get('by_platform', {}) %}
   <div class="stat-chip">
@@ -348,15 +445,30 @@
     <span class="value">{{ by_platform.get('twitter', 0) }}</span>
   </div>
   {% endif %}
-  {% if by_status.get('expired') %}
-  <div class="stat-chip">
-    <span class="dot red"></span>
-    <span class="label">Expired:</span>
-    <span class="value">{{ by_status.get('expired', 0) }}</span>
   </div>
-  {% endif %}
+  <div class="summary-toolbar">
+    <button type="button" class="btn-refresh" id="btn-refresh" title="Refresh from database">
+      <svg id="refresh-icon" width="13" height="13" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
+        <path d="M4 4v5h5M16 16v-5h-5"/>
+        <path d="M20 10a10 10 0 0 0-17.4-6.7L4 4M0 10a10 10 0 0 0 17.4 6.7L16 16"/>
+      </svg>
+      <span id="refresh-label">Refresh</span>
+    </button>
+    <span class="refresh-status" id="refresh-status" aria-live="polite"></span>
+  </div>
 </div>
 
+{% set expired_total = summary.get('by_status', {}).get('expired', 0) %}
+<div class="tab-bar">
+  <button type="button" class="tab-btn active" id="tab-btn-active" aria-selected="true"
+    onclick="switchMainTab('active')">Active queue</button>
+  <button type="button" class="tab-btn" id="tab-btn-expired" aria-selected="false"
+    onclick="switchMainTab('expired')">
+    Expired <span class="tab-count">{{ expired_total }}</span>
+  </button>
+</div>
+
+<div id="panel-active" class="tab-panel active" role="tabpanel">
 <div class="container">
 
   {% for section_key, section_label, items in sections %}
@@ -515,8 +627,248 @@
   {% endif %}
 
 </div><!-- .container -->
+</div><!-- #panel-active -->
+
+<div id="panel-expired" class="tab-panel" role="tabpanel">
+<div class="container">
+  <div class="section">
+    <div class="section-header">
+      <h2>Expired opportunities</h2>
+      <span class="section-count" id="expired-showing-count">0</span>
+    </div>
+    <p class="section-empty" id="expired-hint" style="display:none"></p>
+    <div id="expired-list"></div>
+    <button type="button" id="expired-load-more" style="display:none;margin-top:16px;padding:6px 14px;background:var(--surface2);border:1px solid var(--border);border-radius:6px;color:var(--text);font-weight:600;font-size:12px;font-family:inherit;cursor:pointer">Load next 20</button>
+    <p class="refresh-status" id="expired-fetch-status" aria-live="polite"></p>
+  </div>
+</div>
+</div><!-- #panel-expired -->
 
 <script>
+/* api_base is patched when served through ai-home-hub (hub_module._patch_served_html_api_base). */
+const API_BASE = {{ api_base | tojson }};
+
+const expiredState = {
+  bootstrapped: false,
+  nextPageToFetch: 1,
+  hasMore: true,
+  loading: false,
+  totalListed: 0,
+};
+
+function escapeHtml(s) {
+  if (s == null || s === undefined) return "";
+  const d = document.createElement("div");
+  d.textContent = String(s);
+  return d.innerHTML;
+}
+
+function slugForClass(s) {
+  const x = String(s || "unknown").replace(/[^a-z0-9_-]/gi, "");
+  return x || "unknown";
+}
+
+function switchMainTab(which) {
+  const isActive = which === "active";
+  const a = document.getElementById("tab-btn-active");
+  const e = document.getElementById("tab-btn-expired");
+  const pa = document.getElementById("panel-active");
+  const pe = document.getElementById("panel-expired");
+  if (!a || !e || !pa || !pe) return;
+  a.classList.toggle("active", isActive);
+  a.setAttribute("aria-selected", String(isActive));
+  e.classList.toggle("active", !isActive);
+  e.setAttribute("aria-selected", String(!isActive));
+  pa.classList.toggle("active", isActive);
+  pe.classList.toggle("active", !isActive);
+  if (!isActive) bootstrapExpiredFetch();
+}
+
+function buildExpiredCard(item) {
+  const cardId = "exp-" + item.id;
+  const title = escapeHtml(item.title_snapshot || "");
+  const url = escapeHtml(item.target_url || "#");
+  const targetName = escapeHtml(item.target_name || "");
+  const platform = escapeHtml(item.platform || "?");
+  const status = escapeHtml(item.status || "expired");
+  const pSlug = slugForClass(item.platform);
+  const stSlug = slugForClass(item.status);
+  let copyBlock = "";
+  const s = item.recommended_text_short || "";
+  const m = item.recommended_text_medium || "";
+  const l = item.recommended_text_long || "";
+  if (s || m || l) {
+    const tabsId = "tabs-" + cardId;
+    let btns = "";
+    let panes = "";
+    let first = true;
+    const addVariant = (key, lab, txt) => {
+      btns += `<button type="button" class="copy-tab${first ? " active" : ""}" onclick="switchTab('${cardId}', '${key}', this)">${lab}</button>`;
+      panes += `<div class="copy-pane${first ? " active" : ""}" id="${cardId}-${key}"><div class="copy-text" id="text-${cardId}-${key}">${escapeHtml(txt)}</div><div class="copy-action"><button type="button" class="copy-btn" onclick="copyText('text-${cardId}-${key}')">Copy</button><a href="${url}" target="_blank" rel="noopener"><button type="button" class="copy-btn">Open ↗</button></a></div></div>`;
+      first = false;
+    };
+    if (s) addVariant("short", "Short", s);
+    if (m) addVariant("medium", "Medium", m);
+    if (l) addVariant("long", "Long", l);
+    copyBlock = `<div class="copy-tabs" id="${tabsId}">${btns}</div>${panes}`;
+  }
+  const why = item.why_now ? `<div class="why-now">${escapeHtml(item.why_now)}</div>` : "";
+  const risk = item.risk_notes ? `<div class="risk-notes">${escapeHtml(item.risk_notes)}</div>` : "";
+  const fitC = escapeHtml(item.fit_score_class || "score-low");
+  const urgC = escapeHtml(item.urgency_score_class || "score-low");
+  const riskC = escapeHtml(item.risk_score_class || "risk-mid");
+  const confC = escapeHtml(item.confidence_score_class || "score-low");
+  return `<div class="card" id="${cardId}"><div class="card-header"><div class="card-title"><a href="${url}" target="_blank" rel="noopener">${title}</a></div><div class="card-badges"><span class="badge badge-platform-${pSlug}">${platform}</span><span class="badge badge-status-${stSlug}">${status}</span></div></div><div class="target-link">→ ${targetName}</div><div class="scores"><div class="score-pill ${fitC}"><span class="label">fit</span><span class="value">${escapeHtml(String(item.fit_score ?? 0))}</span></div><div class="score-pill ${urgC}"><span class="label">urgency</span><span class="value">${escapeHtml(String(item.urgency_score ?? 0))}</span></div><div class="score-pill ${riskC}"><span class="label">risk</span><span class="value">${escapeHtml(String(item.risk_score ?? 0))}</span></div><div class="score-pill ${confC}"><span class="label">confidence</span><span class="value">${escapeHtml(String(item.confidence_score ?? 0))}</span></div></div>${why}${copyBlock}${risk}<div class="card-meta"><span>Added: ${escapeHtml(item.created_at_fmt || "")}</span><span>Seen: ${escapeHtml(item.last_seen_at_fmt || "")}</span></div></div>`;
+}
+
+function appendExpiredCards(items) {
+  const list = document.getElementById("expired-list");
+  if (!list) return;
+  const tpl = document.createElement("template");
+  for (const item of items) {
+    tpl.innerHTML = buildExpiredCard(item).trim();
+    const node = tpl.content.firstElementChild;
+    if (node) list.appendChild(node);
+  }
+}
+
+async function bootstrapExpiredFetch() {
+  if (expiredState.bootstrapped) return;
+  await fetchExpiredPage(true);
+}
+
+async function fetchExpiredPage(clearFirst) {
+  const statusEl = document.getElementById("expired-fetch-status");
+  const hint = document.getElementById("expired-hint");
+  const lm = document.getElementById("expired-load-more");
+  const cnt = document.getElementById("expired-showing-count");
+  const list = document.getElementById("expired-list");
+
+  if (!statusEl || !hint || !lm || !cnt || !list) return;
+
+  if (location.protocol === "file:") {
+    hint.style.display = "block";
+    hint.textContent = "Serve this report through ai-home-hub to load expired items from the database.";
+    return;
+  }
+
+  if (expiredState.loading) return;
+  if (!clearFirst && !expiredState.hasMore) return;
+
+  expiredState.loading = true;
+  statusEl.classList.remove("err");
+  if (clearFirst) {
+    list.innerHTML = "";
+    expiredState.totalListed = 0;
+    expiredState.nextPageToFetch = 1;
+    expiredState.hasMore = true;
+    hint.style.display = "none";
+    expiredState.bootstrapped = false;
+  }
+
+  const page = expiredState.nextPageToFetch;
+  statusEl.textContent = clearFirst ? "Loading…" : "Loading more…";
+
+  try {
+    const res = await fetch(API_BASE + "/api/opportunities/expired", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ page }),
+      credentials: "same-origin",
+    });
+    const data = await res.json().catch(() => ({}));
+    if (!res.ok) throw new Error(data.error || `HTTP ${res.status}`);
+    if (data.ok !== true) throw new Error(typeof data.error === "string" ? data.error : "Invalid response");
+
+    const items = data.items || [];
+    if (clearFirst && Number(data.total) === 0) {
+      hint.style.display = "block";
+      hint.textContent = "No expired opportunities in the database.";
+      lm.style.display = "none";
+      cnt.textContent = "0";
+      statusEl.textContent = "";
+      expiredState.hasMore = false;
+      expiredState.bootstrapped = true;
+      return;
+    }
+
+    appendExpiredCards(items);
+    expiredState.totalListed += items.length;
+    cnt.textContent = String(expiredState.totalListed);
+    expiredState.hasMore = !!data.has_more;
+    expiredState.nextPageToFetch = page + 1;
+    lm.style.display = expiredState.hasMore ? "inline-block" : "none";
+    if (data.total != null)
+      statusEl.textContent = `Showing ${expiredState.totalListed} of ${data.total}`;
+    else statusEl.textContent = "";
+    if (clearFirst) expiredState.bootstrapped = true;
+  } catch (e) {
+    statusEl.textContent = e instanceof Error ? e.message : String(e);
+    statusEl.classList.add("err");
+  } finally {
+    expiredState.loading = false;
+  }
+}
+
+document.getElementById("expired-load-more")?.addEventListener("click", () => {
+  fetchExpiredPage(false);
+});
+
+(function () {
+  "use strict";
+  const refreshBtn = document.getElementById("btn-refresh");
+  const refreshIcon = document.getElementById("refresh-icon");
+  const refreshLabel = document.getElementById("refresh-label");
+  const refreshStatus = document.getElementById("refresh-status");
+  if (!refreshBtn || !refreshLabel) return;
+
+  refreshBtn.addEventListener("click", async () => {
+    if (location.protocol === "file:") {
+      if (refreshStatus) {
+        refreshStatus.textContent = "Open via hub HTTP.";
+        refreshStatus.classList.add("err");
+      }
+      return;
+    }
+    refreshBtn.disabled = true;
+    if (refreshIcon) refreshIcon.classList.add("spinning");
+    refreshLabel.textContent = "Refreshing…";
+    if (refreshStatus) {
+      refreshStatus.textContent = "";
+      refreshStatus.classList.remove("err");
+    }
+    try {
+      const resp = await fetch(API_BASE + "/api/re-render", { method: "POST" });
+      if (resp.ok) {
+        window.location.reload();
+        return;
+      }
+      const data = await resp.json().catch(() => ({}));
+      refreshLabel.textContent = "Failed";
+      if (refreshStatus) {
+        refreshStatus.textContent = typeof data.error === "string" ? data.error : "HTTP " + resp.status;
+        refreshStatus.classList.add("err");
+      }
+      setTimeout(() => {
+        refreshBtn.disabled = false;
+        if (refreshIcon) refreshIcon.classList.remove("spinning");
+        refreshLabel.textContent = "Refresh";
+      }, 2200);
+    } catch (_) {
+      refreshLabel.textContent = "No server";
+      if (refreshStatus) {
+        refreshStatus.textContent = "Network error";
+        refreshStatus.classList.add("err");
+      }
+      setTimeout(() => {
+        refreshBtn.disabled = false;
+        if (refreshIcon) refreshIcon.classList.remove("spinning");
+        refreshLabel.textContent = "Refresh";
+      }, 2500);
+    }
+  });
+})();
+
 function switchTab(cardId, variant, btn) {
   const container = document.getElementById(cardId);
   container.querySelectorAll('.copy-tab').forEach(t => t.classList.remove('active'));

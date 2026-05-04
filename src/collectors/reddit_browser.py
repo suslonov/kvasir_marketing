@@ -8,6 +8,7 @@ import random
 import time
 from datetime import datetime, timezone
 from pathlib import Path
+from urllib.parse import quote_plus
 from typing import Any, Optional
 
 from src.extractors.reddit_extract import check_session_valid, extract_posts_from_page
@@ -263,7 +264,7 @@ class RedditBrowserCollector:
 
     def _collect_subreddit_search(self, page: Any, query: str) -> list[CandidateItem]:
         """Search Reddit globally for a query string."""
-        encoded = query.replace(" ", "+")
+        encoded = quote_plus(query, safe="")
         url = f"{_REDDIT_BASE}/search/?q={encoded}&sort=hot&t=week"
         try:
             page.goto(url, wait_until="domcontentloaded", timeout=_NAV_TIMEOUT_MS)

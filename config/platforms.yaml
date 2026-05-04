@@ -23,6 +23,9 @@ platforms:
         - "classic literature"
         - "book recommendations"
         - "interactive learning"
+        # Russian-language discovery
+        - "русская литература книги"
+        - "что почитать литература ИИ"
     targets:
       - type: subreddit:hot
         value: books
@@ -64,6 +67,23 @@ platforms:
         value: "reading quiz"
       - type: subreddit:search
         value: "book discussion AI"
+      # Russian-language communities & global search (Cyrillic)
+      - type: subreddit:hot
+        value: RussianLiterature
+      - type: subreddit:new
+        value: RussianLiterature
+      - type: subreddit:hot
+        value: ru
+      - type: subreddit:hot
+        value: russian
+      - type: subreddit:hot
+        value: learnrussian
+      - type: subreddit:search
+        value: "что почитать книги"
+      - type: subreddit:search
+        value: "русская литература обсуждение"
+      - type: subreddit:search
+        value: "книги ИИ чтение приложение"
 
   twitter:
     enabled: false
@@ -84,32 +104,86 @@ platforms:
     enabled: true
     collector: youtube
     max_posts_per_target: 10     # videos per search query
-    max_targets_per_run: 5       # random sample per pipeline run
+    max_targets_per_run: 10      # wider pool — sample more queries per pipeline run
     inter_request_sleep_min: 1.5 # seconds — random sleep between API calls
     inter_request_sleep_max: 3.5
     fetch_top_comment: true      # fetch top comment for each video (costs 1 quota unit each)
     targets:
-      # Book / reading discussions
+      # Core book / reading intent
       - type: video_search
         value: "book discussion AI recommendations"
       - type: video_search
-        value: "classic literature analysis"
+        value: "classic literature analysis video essay"
       - type: video_search
-        value: "book club video essay"
+        value: "book club discussion questions"
       - type: video_search
-        value: "what should I read next"
-      # AI / EdTech
+        value: "what should I read next recommendations"
       - type: video_search
-        value: "AI reading app review"
+        value: "BookTok reading community react"
       - type: video_search
-        value: "interactive learning AI tools"
+        value: "reading slump how to read more books"
       - type: video_search
-        value: "AI for education students"
-      # Quiz / trivia
+        value: "book vs movie adaptation debate"
       - type: video_search
-        value: "literary quiz trivia books"
+        value: "buddy read vlog book reaction"
       - type: video_search
-        value: "book trivia challenge"
+        value: "52 books reading challenge"
+      - type: video_search
+        value: "spoiler free book review deep dive"
+      # Video essay / lit-culture niches
+      - type: video_search
+        value: "why you should read this book essay"
+      - type: video_search
+        value: "dark academia reading aesthetic books"
+      - type: video_search
+        value: "study with me literature exam"
+      - type: video_search
+        value: "AP English literature themes explained"
+      - type: video_search
+        value: "Shakespeare explained for students"
+      - type: video_search
+        value: "poetry analysis explained simple"
+      - type: video_search
+        value: "learn language by reading novels tips"
+      # AI / tools / interactive learning (Quizly-adjacent)
+      - type: video_search
+        value: "AI reading app review 2025"
+      - type: video_search
+        value: "ChatGPT for studying books homework"
+      - type: video_search
+        value: "interactive fiction AI chat story"
+      - type: video_search
+        value: "AI tutor explain book chapter"
+      - type: video_search
+        value: "interactive learning games for adults"
+      - type: video_search
+        value: "EdTech tools for English teachers"
+      - type: video_search
+        value: "language learning app gamification"
+      # Quiz / games / brainy fun
+      - type: video_search
+        value: "literary quiz pub trivia books"
+      - type: video_search
+        value: "guess the book from emoji challenge"
+      - type: video_search
+        value: "book trivia gameshow style"
+      - type: video_search
+        value: "word game puzzle lovers book recommendations"
+      - type: video_search
+        value: "only connect literary connections"
+      - type: video_search
+        value: "escape room puzzle solving riddles"
+      # Creators / formats that spark comments
+      - type: video_search
+        value: "booktube shelf tour underrated picks"
+      - type: video_search
+        value: "author interview writing advice readers"
+      - type: video_search
+        value: "nonfiction book summary critical thinking"
+      - type: video_search
+        value: "audiobook vs reading which is better science"
+      - type: video_search
+        value: "Kindle Scribe note taking reading workflow"
       # Russian-language (relevance_language + region bias results toward RU creators)
       - type: video_search
         value: "что почитать книги рекомендации"

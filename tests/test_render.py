@@ -68,6 +68,9 @@ def test_render_contains_expected_content() -> None:
         assert "books" in content
         # New template uses placement_type "comment_reply" mapped from "comment_opportunity"
         assert "comment_reply" in content or "Reply Opportunities" in content
+        assert 'const API_BASE = "";' in content
+        assert "btn-refresh" in content
+        assert 'API_BASE + "/api/re-render"' in content
 
 
 def test_render_multiple_subreddits() -> None:

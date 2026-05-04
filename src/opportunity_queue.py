@@ -5,7 +5,7 @@ from __future__ import annotations
 import logging
 from datetime import datetime, timedelta
 from pathlib import Path
-from typing import Optional
+from typing import Any, Optional
 
 from src import db
 from src.models import CandidateItem, OpportunityDecision, PlacementType, QueueStatus
@@ -113,4 +113,29 @@ def summarize(db_path: Path) -> dict:
         "total_open": sum(
             v for k, v in by_status.items() if k not in ("expired", "skip")
         ),
+    }
+
+
+_EXPIRED_PAGE_SIZE = 20
+
+
+def get_expired_feed_page(db_path: Path, page: int = 1) -> dict[str, Any]:
+    """
+    Build a JSON-serializable page of expired opportunities (for the HTML inbox API).
+    """
+    from src.render import enrich_queue_item_for_client
+
+    page = max(1, int(page))
+    per = _EXPIRED_PAGE_SIZE
+    offset = (page - 1) * per
+    total = db.count_queue_items_with_status(db_path, "expired")
+    raw = db.get_expired_queue_page(db_path, limit=per, offset=offset)
+    items = [enrich_queue_item_for_client(r) for r in raw]
+    return {
+        "ok": True,
+        "page": page,
+        "per_page": per,
+        "total": total,
+        "has_more": offset + len(items) < total,
+        "items": items,
     }
