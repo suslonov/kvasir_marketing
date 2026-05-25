@@ -237,6 +237,8 @@ class AudienceAngle(str, Enum):
     classic_text_chat = "classic_text_chat"
     quiz_challenge = "quiz_challenge"
     classroom_tool = "classroom_tool"
+    video_contest = "video_contest"
+    ai_video_creator = "ai_video_creator"
     generic = "generic"
 
 

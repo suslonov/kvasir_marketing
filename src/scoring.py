@@ -34,6 +34,11 @@ _TOPIC_PATTERNS = [
     r"jane eyre", r"\bmiddlemarch\b",
     # Game / quiz signals
     r"trivia night", r"board game", r"tabletop", r"quiz night", r"pub quiz",
+    # Video / scene contest signals (new)
+    r"ai video", r"ai.generated video", r"video contest", r"generate video",
+    r"ai short film", r"ai filmmaking", r"video generation", r"ai animation",
+    r"ai art contest", r"creative ai contest", r"text.to.video",
+    r"ai scene", r"scene generator", r"ai creator contest",
 ]
 
 _COMPILED_TOPICS = [re.compile(p, re.IGNORECASE) for p in _TOPIC_PATTERNS]
@@ -50,6 +55,9 @@ _HIGH_VALUE_TARGETS = {
     "52book", "reading", "ChatGPT", "artificial", "MachineLearning",
     "singularity", "learnprogramming", "education", "Teachers", "homeschool",
     "edtech", "trivia", "wordgames", "SideProject",
+    # AI video / creative — new targets for scene/video contest angle
+    "aigeneratedart", "StableDiffusion", "midjourney", "aivideo",
+    "VideoEditing", "filmmakers", "AIArt",
 }
 
 

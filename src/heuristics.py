@@ -17,10 +17,17 @@ _QUIZLY_ANGLES = [
     "book summary", "ai tools for", "interactive learning",
     "ai tutor", "ai game", "edtech", "homeschool", "book club",
     "suggest.*book", "what.*read", "how.*learn", "resources.*for",
+    # Video / scene contest angles (new)
+    "ai video", "ai generated video", "video contest", "generate video",
+    "ai short film", "ai filmmaking", "video generation", "ai animation",
+    "ai art contest", "creative contest", "ai scene", "scene generator",
+    "text to video", "video from text", "ai creator",
     # Russian
     "книг", "литератур", "чтени", "читать", "что почитать",
     "классик", "обсуждени", "рекомендаци", "квиз", "викторин",
     "книжный клуб", "интерактивн", "ИИ",
+    # Russian video / contest
+    "видео конкурс", "ии видео", "генерация видео", "ии арт",
 ]
 
 _COMPILED_ANGLES = [re.compile(p, re.IGNORECASE) for p in _QUIZLY_ANGLES]

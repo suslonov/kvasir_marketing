@@ -63,6 +63,17 @@ subreddits:
     enabled: true
   - name: RussianLiterature
     enabled: true
+  # AI video / creative contest communities (new — scene/video contest angle)
+  - name: aigeneratedart
+    enabled: true
+  - name: StableDiffusion
+    enabled: true
+  - name: aivideo
+    enabled: true
+  - name: AIArt
+    enabled: true
+  - name: filmmakers
+    enabled: false
 
 twitter_searches:
   # Books / reading discovery
@@ -81,6 +92,17 @@ twitter_searches:
     enabled: false
 
 include_keywords:
+  # Video / scene contest (new)
+  - ai video
+  - video contest
+  - generate video
+  - ai generated video
+  - ai animation
+  - text to video
+  - ai art contest
+  - ai short film
+  - video generation
+  - ai creator
   # Core Quizly topics
   - ai book
   - book quiz

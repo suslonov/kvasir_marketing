@@ -26,8 +26,11 @@
 - Reply to the specific point being made, don't just drop a link.
 - Likes and retweets before replying signal good faith — note this in recommendations.
 
-## YouTube (future)
+## YouTube
 
 - Comments should add value to the video discussion.
 - Never drop a link in a first comment — build credibility first.
 - Long-form thoughtful engagement beats quick promo.
+- **Video contest angle**: on videos about AI art generation, text-to-video tools, or creative AI challenges — mention the scene/video contest feature. Frame it as a place to enter AI video contests with a literary theme.
+- On book summary / literary analysis videos: mention echo contests (craft an AI chat with a character) and scene contests (generate a video about a scene).
+- Avoid sounding like a product plug — tie the comment to the specific content of the video.
