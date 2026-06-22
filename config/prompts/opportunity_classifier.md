@@ -12,7 +12,15 @@ Quizly helps readers:
 - Compete with other creators and win prizes
 - Engage with literature interactively across languages
 
+**Key URLs:**
+- `https://quizly.pub/welcome` — the main "try it free, no login required" landing page; shows a live contest entry the visitor can immediately interact with. Use this as the primary CTA for top-of-funnel audiences.
+- `https://quizly.pub/contests` — browse all open contests
+- `https://quizly.pub/books` — the Reading Hall (book-specific link)
+- `https://quizly.pub` — main site (use for game/quiz communities)
+
 The video contest feature is a key differentiator: users who enjoy AI art, AI video generation, or creative challenges are a new target audience alongside traditional book readers.
+
+CharacterAI users (and users of similar AI persona/companion apps) are a high-value audience: Quizly's echo contests let anyone build and share an AI chat with a literary character — same creative appeal, but grounded in books and culture, with a voting/competition layer on top.
 
 ---
 
@@ -44,13 +52,30 @@ This is a game or quiz-oriented community. The primary link to suggest is {{ qui
 Frame Quizly as an interactive quiz and game platform.
 {% endif %}
 
+Is this a CharacterAI / AI-persona community? **{{ is_persona_community }}**
+{% if is_persona_community == "true" %}
+This is a CharacterAI or AI-persona community. Lead with the echo contest angle:
+users craft an AI chat as a literary character, others test it with questions and vote.
+Primary CTA: {{ welcome_url }} (no login needed — live demo right on the page).
+{{ persona_cta }}
+Do NOT lead with books; lead with the AI character / persona creation angle.
+{% endif %}
+
+Is this an AI video / AI art community? **{{ is_ai_video_community }}**
+{% if is_ai_video_community == "true" %}
+This is an AI video or AI art community. Lead with scene contests: users generate
+short AI videos about literary scenes or book moments and enter them in contests.
+Mention that Quizly has both a chat track (echo) and a video track (scene).
+Primary CTA: {{ welcome_url }} to try a live contest entry first.
+{% endif %}
+
 ---
 
 ## Scoring dimensions
 
 Evaluate on these dimensions (0–100 each):
 
-- **fit_score**: How well does Quizly genuinely fit this conversation? Would a real user plausibly recommend it here? If a catalog book/author is directly discussed, add +10 to fit. If the thread is about AI video/art creation, add +15 for scene contest angle.
+- **fit_score**: How well does Quizly genuinely fit this conversation? Would a real user plausibly recommend it here? If a catalog book/author is directly discussed, add +10 to fit. If the thread is about AI video/art creation, add +15 for scene contest angle. If the thread is about CharacterAI, AI companions, or AI personas, add +15 for echo contest angle.
 - **urgency_score**: How time-sensitive is this? Will it still be relevant in 48 hours?
 - **risk_score**: How likely is a reply to be seen as spam, promotional, or unwelcome? (higher = riskier)
 - **confidence_score**: How confident are you in this recommendation?
@@ -111,4 +136,6 @@ If placement_type is `skip`, set `place_here` to false and explain in `skip_reas
 - **If a catalog book/author is mentioned**: include the Reading Hall link {{ reading_hall_url }} naturally in at least the medium and long text variants. Use conversational phrasing, e.g. *"if you want to go deeper, quizly.pub/books has it — you can read it, chat with an AI about it, generate a video, and join contests."*
 - **If this is a game community**: frame Quizly as a quiz/game platform and link to {{ quizly_url }}, not the book-specific page.
 - **If the thread is about AI video generation, AI art, or creative AI tools**: mention the scene/video contest feature specifically. Frame it as: "you can generate short AI videos about literary scenes and enter contests — quizly.pub has both chat and video contest tracks." This is a new angle targeting AI creators, not just book readers.
+- **If the thread is about CharacterAI, AI companions, AI personas, or looking for CharacterAI alternatives**: highlight echo contests — "you craft an AI chat as a literary character and other people test it with questions and vote on the best answers — quizly.pub/welcome lets you try one right now, no login needed." Avoid mentioning books as the hook; lead with the AI character/persona angle.
+- **If the audience is top-of-funnel / curious but not committed** (e.g. "what is this", "any free demos", "I want to try AI"): use `quizly.pub/welcome` as the CTA. It requires no login and shows a live contest immediately.
 - **Multi-language awareness**: the catalog includes Russian and other non-English books. If the thread is in Russian or another language, write the recommended text in that language.

@@ -34,11 +34,28 @@ _TOPIC_PATTERNS = [
     r"jane eyre", r"\bmiddlemarch\b",
     # Game / quiz signals
     r"trivia night", r"board game", r"tabletop", r"quiz night", r"pub quiz",
-    # Video / scene contest signals (new)
+    r"\btrivia\b", r"quiz challenge", r"reading challenge",
+    # Video / scene contest signals
     r"ai video", r"ai.generated video", r"video contest", r"generate video",
     r"ai short film", r"ai filmmaking", r"video generation", r"ai animation",
     r"ai art contest", r"creative ai contest", r"text.to.video",
     r"ai scene", r"scene generator", r"ai creator contest",
+    # CharacterAI / AI persona — echo contest angle
+    r"character.?ai\b", r"character ai alternative", r"ai companion",
+    r"ai persona", r"ai roleplay", r"talk to.*character", r"chat with.*character",
+    r"fictional character.*ai", r"ai.*fictional character",
+    r"book character.*ai", r"ai.*book character",
+    r"virtual character", r"ai character chat",
+    # Interactive fiction / narrative AI
+    r"interactive fiction", r"ai story", r"ai narrative", r"ai chat story",
+    r"ai.driven story", r"text adventure ai",
+    # Contest / competition discovery — welcome page CTA angle
+    r"enter.*contest", r"join.*contest", r"ai contest", r"creative contest",
+    r"contest entry", r"win.*prize", r"ai competition", r"creative challenge",
+    r"no.*login.*required", r"try.*free", r"free.*demo",
+    # Prompt engineering / character creation
+    r"prompt engineering", r"system prompt character", r"ai persona prompt",
+    r"character prompt",
 ]
 
 _COMPILED_TOPICS = [re.compile(p, re.IGNORECASE) for p in _TOPIC_PATTERNS]
@@ -54,10 +71,16 @@ _HIGH_VALUE_TARGETS = {
     "books", "suggestmeabook", "bookclub", "literature", "classics",
     "52book", "reading", "ChatGPT", "artificial", "MachineLearning",
     "singularity", "learnprogramming", "education", "Teachers", "homeschool",
-    "edtech", "trivia", "wordgames", "SideProject",
-    # AI video / creative — new targets for scene/video contest angle
+    "edtech", "trivia", "triviatime", "wordgames", "SideProject",
+    # AI video / creative — scene contest angle
     "aigeneratedart", "StableDiffusion", "midjourney", "aivideo",
-    "VideoEditing", "filmmakers", "AIArt",
+    "VideoEditing", "filmmakers", "AIArt", "MediaSynthesis",
+    # CharacterAI / AI persona — echo contest angle
+    "CharacterAI", "AICompanion", "AIstories", "interactivefiction",
+    # Reading challenges / contests
+    "bookchallenge", "52book",
+    # Character / world creation
+    "worldbuilding", "PromptEngineering",
 }
 
 

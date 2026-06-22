@@ -34,6 +34,7 @@ def process_decision(
         logger.debug(
             "Skipping %s: %s", candidate.platform_object_id, decision.skip_reason or "no fit"
         )
+        db.upsert_skipped_opportunity(db_path, candidate, decision)
         return None
 
     if _is_on_cooldown(db_path, candidate, decision):

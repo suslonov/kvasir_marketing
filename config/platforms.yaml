@@ -85,6 +85,70 @@ platforms:
       - type: subreddit:search
         value: "книги ИИ чтение приложение"
 
+      # ── CharacterAI / AI persona communities ──────────────────────────────
+      # Echo contests = "AI chat with a literary character" → natural fit for
+      # people exploring or leaving CharacterAI and similar platforms.
+      - type: subreddit:hot
+        value: CharacterAI
+      - type: subreddit:new
+        value: CharacterAI
+      - type: subreddit:hot
+        value: AICompanion
+      - type: subreddit:search
+        value: "character ai alternative"
+      - type: subreddit:search
+        value: "chat with book character"
+      - type: subreddit:search
+        value: "talk to ai character"
+
+      # ── AI video / creative — scene contest angle ──────────────────────────
+      # These were in _HIGH_VALUE_TARGETS in scoring.py but never added here.
+      - type: subreddit:hot
+        value: aivideo
+      - type: subreddit:hot
+        value: AIArt
+      - type: subreddit:hot
+        value: aigeneratedart
+      - type: subreddit:new
+        value: MediaSynthesis
+      - type: subreddit:search
+        value: "ai video contest 2026"
+      - type: subreddit:search
+        value: "ai creative challenge"
+
+      # ── Interactive fiction / narrative AI ────────────────────────────────
+      # People already engaging with AI-driven stories; welcome page is a
+      # natural "try it free" demo with no login required.
+      - type: subreddit:hot
+        value: interactivefiction
+      - type: subreddit:hot
+        value: AIstories
+      - type: subreddit:search
+        value: "interactive fiction ai"
+
+      # ── Trivia / quiz communities ─────────────────────────────────────────
+      # r/trivia is listed in game_subreddits (book_catalog.yaml) but was
+      # never added here — gap closed.
+      - type: subreddit:hot
+        value: trivia
+      - type: subreddit:hot
+        value: triviatime
+
+      # ── Reading-challenge / contest-minded readers ─────────────────────────
+      - type: subreddit:hot
+        value: 52book
+      - type: subreddit:hot
+        value: bookchallenge
+
+      # ── Character / world creators ────────────────────────────────────────
+      # Writers building characters → "make an AI echo of your character"
+      - type: subreddit:new
+        value: worldbuilding
+      - type: subreddit:new
+        value: PromptEngineering
+      - type: subreddit:search
+        value: "ai character persona"
+
   twitter:
     enabled: false
     collector: twitter
@@ -184,6 +248,26 @@ platforms:
         value: "audiobook vs reading which is better science"
       - type: video_search
         value: "Kindle Scribe note taking reading workflow"
+      # CharacterAI alternative / AI persona seekers
+      - type: video_search
+        value: "character AI alternatives 2026"
+      - type: video_search
+        value: "talk to AI book characters apps"
+      - type: video_search
+        value: "AI roleplay literary characters"
+      # AI video / scene contest creators
+      - type: video_search
+        value: "AI video generation contest submission"
+      - type: video_search
+        value: "text to video AI creative challenge"
+      - type: video_search
+        value: "best AI video tools 2026 contest"
+      # Interactive fiction / welcome-page top-of-funnel
+      - type: video_search
+        value: "AI interactive story no login free try"
+      - type: video_search
+        value: "AI fiction chat demo comparison"
+
       # Russian-language (relevance_language + region bias results toward RU creators)
       - type: video_search
         value: "что почитать книги рекомендации"

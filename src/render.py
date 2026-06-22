@@ -140,6 +140,8 @@ def render_html(
     queue_items: Optional[list[dict[str, Any]]] = None,
     summary: Optional[dict[str, Any]] = None,
     recent_runs: Optional[list[dict[str, Any]]] = None,
+    skipped_items: Optional[list[dict[str, Any]]] = None,
+    backlog_items: Optional[list[dict[str, Any]]] = None,
     # Legacy keyword (old tests pass opportunities= positional)
     opportunities: Optional[list[dict[str, Any]]] = None,
     api_base: str = "",
@@ -153,9 +155,14 @@ def render_html(
         summary = {"by_status": {}, "by_platform": {}, "total_open": len(queue_items)}
     if recent_runs is None:
         recent_runs = []
+    if skipped_items is None:
+        skipped_items = []
+    if backlog_items is None:
+        backlog_items = []
 
     # Normalize legacy item shapes to new queue item field names
     queue_items = [_normalize_item(item) for item in queue_items]
+    skipped_items = [_normalize_item(item) for item in skipped_items]
 
     output_path.parent.mkdir(parents=True, exist_ok=True)
 
@@ -177,6 +184,12 @@ def render_html(
         for key, label in section_order
     ]
 
+    # Sort skipped by fit_score desc (highest-scoring skips are most interesting)
+    skipped_items.sort(key=lambda x: x.get("fit_score", 0), reverse=True)
+
+    # Sort backlog by engagement proxy desc
+    backlog_items.sort(key=lambda x: x.get("score", 0) + x.get("comment_count", 0) * 2, reverse=True)
+
     env = _build_env(_TEMPLATE_DIR)
     template = env.get_template(_TEMPLATE_NAME)
     generated_at = datetime.utcnow().strftime("%Y-%m-%d %H:%M UTC")
@@ -188,6 +201,8 @@ def render_html(
         generated_at=generated_at,
         total_count=len(queue_items),
         api_base=api_base,
+        skipped_items=skipped_items,
+        backlog_items=backlog_items,
     )
 
     output_path.write_text(html, encoding="utf-8")

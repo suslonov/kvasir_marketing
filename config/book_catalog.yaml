@@ -6,15 +6,28 @@
 
 reading_hall_url: "https://quizly.pub/books"
 quizly_url: "https://quizly.pub"
+welcome_url: "https://quizly.pub/welcome"
+contests_url: "https://quizly.pub/contests"
 
 # Reading Hall CTA text (used in recommendations when a book is mentioned)
 reading_hall_cta: >
   you can read the book, discuss it with our AI adviser, generate a video on
   the book, and take part in contests — all at quizly.pub/books
 
+# Welcome page CTA — use for top-of-funnel / no-login contexts
+welcome_cta: >
+  you can try it immediately at quizly.pub/welcome — no login needed, just
+  pick a contest entry and ask the AI character anything
+
+# CharacterAI / AI persona CTA — use for echo contest angle
+persona_cta: >
+  you can build an AI chat as any literary character, share it, and let others
+  vote on the best answers — try a live example at quizly.pub/welcome
+
 # Game / quiz subreddits — suggest quizly.pub (main site) instead of /books
 game_subreddits:
   - trivia
+  - triviatime
   - wordgames
   - boardgames
   - rpg
@@ -23,6 +36,24 @@ game_subreddits:
   - quizzes
   - AskReddit   # quiz-like discussion threads
   - CasualConversation
+
+# CharacterAI / AI persona subreddits — suggest quizly.pub/welcome (echo contest demo)
+persona_subreddits:
+  - CharacterAI
+  - AICompanion
+  - AIstories
+  - interactivefiction
+  - PromptEngineering
+  - worldbuilding
+
+# AI video / art subreddits — suggest scene contest angle
+ai_video_subreddits:
+  - aivideo
+  - AIArt
+  - aigeneratedart
+  - StableDiffusion
+  - midjourney
+  - MediaSynthesis
 
 # Authors — each entry has the canonical English name plus aliases used in
 # Reddit discussions (different transliterations, abbreviations, etc.).

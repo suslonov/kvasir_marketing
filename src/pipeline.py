@@ -147,10 +147,14 @@ def run_pipeline(
         queue_items = opportunity_queue.get_review_inbox(db_path)
         summary = opportunity_queue.summarize(db_path)
         recent_runs = db.get_recent_runs(db_path, limit=5)
+        skipped_items = db.get_skipped_queue_items(db_path, limit=200)
+        backlog_items = db.get_unevaluated_candidates(db_path, limit=200)
         render.render_html(
             queue_items=queue_items,
             summary=summary,
             recent_runs=recent_runs,
+            skipped_items=skipped_items,
+            backlog_items=backlog_items,
             output_path=output_path,
         )
         logger.info("Rendered %d queue items to %s", len(queue_items), output_path)
@@ -189,9 +193,23 @@ def _evaluate_and_queue(
 
     model = app_config.global_config.claude_model if app_config else "claude-sonnet-4-6"
     max_tokens = app_config.global_config.claude_max_tokens if app_config else 4096
-    max_batch = app_config.global_config.max_claude_batch_size if app_config else 20
+    max_batch = app_config.global_config.max_claude_batch_size if app_config else 40
 
     batch = scored[:max_batch]
+
+    # Fill remaining batch slots with high-engagement backlog candidates
+    # (items that passed the gate in previous runs but never reached Claude).
+    remaining = max_batch - len(batch)
+    if remaining > 0:
+        backlog_rows = db.get_unevaluated_candidates(db_path, limit=remaining * 3)
+        if backlog_rows:
+            backlog_items = [_db_row_to_candidate(r) for r in backlog_rows]
+            backlog_scored = scoring.score_and_filter(backlog_items)
+            # Add highest-scoring backlog items to fill the batch
+            for candidate, pre_score in backlog_scored[:remaining]:
+                batch.append((candidate, pre_score))
+            logger.info("Backlog: added %d unevaluated candidates to batch.", min(len(backlog_scored), remaining))
+
     if not batch:
         logger.info("No candidates to evaluate.")
         return 0
@@ -210,6 +228,32 @@ def _evaluate_and_queue(
 
     logger.info("Claude queued %d/%d items.", queued, len(batch))
     return queued
+
+
+def _db_row_to_candidate(row: dict[str, Any]) -> CandidateItem:
+    """Convert a candidate_items DB row dict into a CandidateItem for scoring/evaluation."""
+    from datetime import timezone
+
+    published_at = None
+    if row.get("published_at"):
+        try:
+            from datetime import datetime
+            published_at = datetime.fromisoformat(row["published_at"].replace("Z", "+00:00"))
+        except (ValueError, TypeError):
+            pass
+
+    return CandidateItem(
+        platform=Platform(row["platform"]),
+        platform_object_id=row["platform_object_id"],
+        parent_target=row.get("parent_target", ""),
+        url=row["url"],
+        title=row["title"],
+        body_excerpt=row.get("body_excerpt", ""),
+        author=row.get("author", ""),
+        score=row.get("score", 0),
+        comment_count=row.get("comment_count", 0),
+        published_at=published_at,
+    )
 
 
 def _collect_reddit(platforms_config: dict[str, Any]) -> list[CandidateItem]:

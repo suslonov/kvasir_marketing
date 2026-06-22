@@ -3,7 +3,7 @@ global:
   db_path: "~/social_scanner/state.db"
   output_html: "~/social_scanner/rendered/index.html"
   max_items_per_subreddit: 50
-  max_claude_batch_size: 20
+  max_claude_batch_size: 40
   min_score: 10
   min_comments: 5
   item_age_limit_hours: 72

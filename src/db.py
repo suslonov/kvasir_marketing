@@ -408,6 +408,95 @@ def upsert_platform_target(db_path: Path, target: dict) -> None:
         )
 
 
+def upsert_skipped_opportunity(
+    db_path: Path,
+    candidate: CandidateItem,
+    decision: OpportunityDecision,
+) -> None:
+    """Persist a Claude 'skip' decision so it is visible in the Filtered view."""
+    now = datetime.utcnow().isoformat()
+    with _connect(db_path) as conn:
+        existing = conn.execute(
+            """SELECT id FROM opportunity_queue
+               WHERE platform = ? AND platform_object_id = ? AND placement_type = 'skip'""",
+            (candidate.platform.value, candidate.platform_object_id),
+        ).fetchone()
+
+        if existing:
+            conn.execute(
+                """UPDATE opportunity_queue SET
+                    fit_score = ?, risk_score = ?, confidence_score = ?,
+                    why_now = ?, risk_notes = ?, decision_model = ?,
+                    last_seen_at = ?, updated_at = ?
+                   WHERE id = ?""",
+                (
+                    decision.fit_score, decision.risk_score, decision.confidence_score,
+                    decision.skip_reason or "", decision.moderation_risk_notes or "",
+                    decision.decision_model or "", now, now, existing["id"],
+                ),
+            )
+        else:
+            conn.execute(
+                """INSERT INTO opportunity_queue (
+                    platform, placement_type, target_name, target_url,
+                    platform_object_id, title_snapshot, body_snapshot,
+                    why_now, fit_score, risk_score, urgency_score, confidence_score,
+                    risk_notes, decision_model, decision_version,
+                    status, created_at, updated_at, last_seen_at
+                ) VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)""",
+                (
+                    candidate.platform.value, "skip",
+                    decision.target_name or "", decision.target_url or "",
+                    candidate.platform_object_id,
+                    candidate.title, (candidate.body_excerpt or "")[:500],
+                    decision.skip_reason or "",
+                    decision.fit_score, decision.risk_score,
+                    decision.urgency_score, decision.confidence_score,
+                    decision.moderation_risk_notes or "",
+                    decision.decision_model or "", decision.decision_version or "1",
+                    "skip", now, now, now,
+                ),
+            )
+
+
+def get_skipped_queue_items(db_path: Path, limit: int = 100) -> list[dict]:
+    """Return items Claude decided to skip, for the Filtered view."""
+    with _connect(db_path) as conn:
+        rows = conn.execute(
+            """SELECT * FROM opportunity_queue
+               WHERE status = 'skip'
+               ORDER BY fit_score DESC, updated_at DESC
+               LIMIT ?""",
+            (limit,),
+        ).fetchall()
+        return [dict(r) for r in rows]
+
+
+def get_unevaluated_candidates(
+    db_path: Path,
+    limit: int = 100,
+    min_engagement: int = 10,
+) -> list[dict]:
+    """
+    Return candidate items that have never been evaluated by Claude
+    (not present in opportunity_queue under any placement_type).
+    Ordered by engagement descending.
+    """
+    with _connect(db_path) as conn:
+        rows = conn.execute(
+            """SELECT c.* FROM candidate_items c
+               WHERE NOT EXISTS (
+                 SELECT 1 FROM opportunity_queue q
+                 WHERE q.platform_object_id = c.platform_object_id
+               )
+               AND (c.score >= ? OR c.comment_count >= 5)
+               ORDER BY (c.score + c.comment_count * 2) DESC
+               LIMIT ?""",
+            (min_engagement, limit),
+        ).fetchall()
+        return [dict(r) for r in rows]
+
+
 def queue_counts_by_status(db_path: Path) -> dict[str, int]:
     with _connect(db_path) as conn:
         rows = conn.execute(

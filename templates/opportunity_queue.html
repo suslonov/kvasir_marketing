@@ -459,12 +459,17 @@
 </div>
 
 {% set expired_total = summary.get('by_status', {}).get('expired', 0) %}
+{% set filtered_total = (skipped_items|length) + (backlog_items|length) %}
 <div class="tab-bar">
   <button type="button" class="tab-btn active" id="tab-btn-active" aria-selected="true"
     onclick="switchMainTab('active')">Active queue</button>
   <button type="button" class="tab-btn" id="tab-btn-expired" aria-selected="false"
     onclick="switchMainTab('expired')">
     Expired <span class="tab-count">{{ expired_total }}</span>
+  </button>
+  <button type="button" class="tab-btn" id="tab-btn-filtered" aria-selected="false"
+    onclick="switchMainTab('filtered')">
+    Filtered <span class="tab-count">{{ filtered_total }}</span>
   </button>
 </div>
 
@@ -644,6 +649,114 @@
 </div>
 </div><!-- #panel-expired -->
 
+<div id="panel-filtered" class="tab-panel" role="tabpanel">
+<div class="container">
+
+  <!-- Section 1: Skipped by Claude -->
+  <div class="section">
+    <div class="section-header">
+      <h2>Skipped by Claude</h2>
+      <span class="section-count">{{ skipped_items|length }}</span>
+    </div>
+    {% if not skipped_items %}
+    <div class="section-empty">No skipped items yet — run the pipeline to evaluate candidates.</div>
+    {% else %}
+    <p style="font-size:12px;color:var(--muted);margin-bottom:12px;">
+      These items were evaluated by Claude and deemed not worth engaging with.
+      High fit_score items near the threshold are worth reviewing — consider adjusting scoring rules.
+    </p>
+    {% for item in skipped_items %}
+    <div class="card" style="opacity:0.82;">
+      <div class="card-header">
+        <div class="card-title">
+          <a href="{{ item.target_url }}" target="_blank" rel="noopener">{{ item.title_snapshot }}</a>
+        </div>
+        <div class="card-badges">
+          <span class="badge badge-platform-{{ item.platform }}">{{ item.platform }}</span>
+          <span class="badge" style="background:#f3f4f6;color:#6b7280;">skipped</span>
+        </div>
+      </div>
+      <div class="target-link">→ {{ item.target_name }}</div>
+      <div class="scores">
+        <div class="score-pill {{ item.fit_score | score_class }}">
+          <span class="label">fit</span>
+          <span class="value">{{ item.fit_score }}</span>
+        </div>
+        <div class="score-pill {{ item.risk_score | risk_class }}">
+          <span class="label">risk</span>
+          <span class="value">{{ item.risk_score }}</span>
+        </div>
+        <div class="score-pill {{ item.confidence_score | score_class }}">
+          <span class="label">confidence</span>
+          <span class="value">{{ item.confidence_score }}</span>
+        </div>
+      </div>
+      {% if item.why_now %}
+      <div class="why-now" style="background:#fff8f0;border-color:#fcd9a0;">
+        <strong>Skip reason:</strong> {{ item.why_now }}
+      </div>
+      {% endif %}
+      {% if item.risk_notes %}
+      <div style="font-size:12px;color:var(--muted);padding:4px 0 0;">{{ item.risk_notes }}</div>
+      {% endif %}
+      <div style="font-size:11px;color:var(--muted);padding-top:6px;">
+        Seen: {{ item.last_seen_at | fmt_date }}
+        {% if item.decision_model %} · {{ item.decision_model }}{% endif %}
+      </div>
+    </div>
+    {% endfor %}
+    {% endif %}
+  </div>
+
+  <!-- Section 2: Backlog — not yet evaluated -->
+  <div class="section">
+    <div class="section-header">
+      <h2>Backlog — not yet evaluated</h2>
+      <span class="section-count">{{ backlog_items|length }}</span>
+    </div>
+    {% if not backlog_items %}
+    <div class="section-empty">All collected candidates have been evaluated.</div>
+    {% else %}
+    <p style="font-size:12px;color:var(--muted);margin-bottom:12px;">
+      These items passed the engagement gate but haven't been sent to Claude yet
+      (batch size limit). They will be processed in upcoming runs, highest-engagement first.
+    </p>
+    {% for item in backlog_items %}
+    <div class="card" style="opacity:0.7;border-style:dashed;">
+      <div class="card-header">
+        <div class="card-title">
+          <a href="{{ item.url }}" target="_blank" rel="noopener">{{ item.title }}</a>
+        </div>
+        <div class="card-badges">
+          <span class="badge badge-platform-{{ item.platform }}">{{ item.platform }}</span>
+          <span class="badge" style="background:#f0f9ff;color:#0369a1;">pending</span>
+        </div>
+      </div>
+      <div class="target-link">→ {{ item.parent_target }}</div>
+      <div class="scores">
+        <div class="score-pill">
+          <span class="label">↑</span>
+          <span class="value">{{ item.score }}</span>
+        </div>
+        <div class="score-pill">
+          <span class="label">💬</span>
+          <span class="value">{{ item.comment_count }}</span>
+        </div>
+      </div>
+      {% if item.body_excerpt %}
+      <div class="why-now" style="background:#f8fafc;border-color:#e2e8f0;font-size:12px;">{{ item.body_excerpt[:200] }}{% if item.body_excerpt|length > 200 %}…{% endif %}</div>
+      {% endif %}
+      <div style="font-size:11px;color:var(--muted);padding-top:6px;">
+        Discovered: {{ item.discovered_at | fmt_date }}
+      </div>
+    </div>
+    {% endfor %}
+    {% endif %}
+  </div>
+
+</div>
+</div><!-- #panel-filtered -->
+
 <script>
 /* api_base is patched when served through ai-home-hub (hub_module._patch_served_html_api_base). */
 const API_BASE = {{ api_base | tojson }};
@@ -669,19 +782,14 @@ function slugForClass(s) {
 }
 
 function switchMainTab(which) {
-  const isActive = which === "active";
-  const a = document.getElementById("tab-btn-active");
-  const e = document.getElementById("tab-btn-expired");
-  const pa = document.getElementById("panel-active");
-  const pe = document.getElementById("panel-expired");
-  if (!a || !e || !pa || !pe) return;
-  a.classList.toggle("active", isActive);
-  a.setAttribute("aria-selected", String(isActive));
-  e.classList.toggle("active", !isActive);
-  e.setAttribute("aria-selected", String(!isActive));
-  pa.classList.toggle("active", isActive);
-  pe.classList.toggle("active", !isActive);
-  if (!isActive) bootstrapExpiredFetch();
+  const tabs = ["active", "expired", "filtered"];
+  tabs.forEach(t => {
+    const btn = document.getElementById("tab-btn-" + t);
+    const panel = document.getElementById("panel-" + t);
+    if (btn) { btn.classList.toggle("active", t === which); btn.setAttribute("aria-selected", String(t === which)); }
+    if (panel) panel.classList.toggle("active", t === which);
+  });
+  if (which === "expired") bootstrapExpiredFetch();
 }
 
 function buildExpiredCard(item) {
