@@ -56,6 +56,15 @@ _TOPIC_PATTERNS = [
     # Prompt engineering / character creation
     r"prompt engineering", r"system prompt character", r"ai persona prompt",
     r"character prompt",
+    # Entertainment / fun / animals (new emphasis)
+    r"funny", r"\bcute\b", r"animal stor", r"\bmy cat\b", r"\bmy dog\b",
+    r"\bpets?\b", r"wholesome", r"just for fun", r"talk to a character",
+    r"chat with.*character", r"\broleplay\b", r"\bmeme\b", r"pop culture",
+    r"guess the", r"writing prompt", r"short story", r"what if", r"alternate history",
+    # Russian entertainment / fun signals
+    r"смешн", r"\bмем", r"котик", r"животн", r"персонаж", r"поговорить с",
+    r"чат с персонажем", r"ролев", r"\bконкурс\b", r"прикол", r"что если",
+    r"альтернативная история",
 ]
 
 _COMPILED_TOPICS = [re.compile(p, re.IGNORECASE) for p in _TOPIC_PATTERNS]
@@ -81,6 +90,14 @@ _HIGH_VALUE_TARGETS = {
     "bookchallenge", "52book",
     # Character / world creation
     "worldbuilding", "PromptEngineering",
+    # Entertainment / fun / animals (new emphasis)
+    "aww", "Awwducational", "AnimalsBeingDerps", "AnimalsBeingBros",
+    "NatureIsFuckingLit", "likeus", "rarepuppers", "cats", "dogs",
+    "WritingPrompts", "shortstories", "tipofmytongue", "CasualConversation",
+    "funny", "HumansBeingBros",
+    # Russian-language communities (underserved, high value)
+    "ru", "russian", "RussianLiterature", "AskARussian", "Pikabu", "2ch",
+    "learnrussian",
 }
 
 

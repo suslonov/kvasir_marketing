@@ -114,11 +114,17 @@ class SocialScannerModule:
             queue_items = opportunity_queue.get_review_inbox(self.db_path, limit=200)
             summary = opportunity_queue.summarize(self.db_path)
             recent_runs = database.get_recent_runs(self.db_path, limit=5)
+            skipped_items = database.get_skipped_queue_items(self.db_path, limit=200)
+            backlog_items = database.get_unevaluated_candidates(self.db_path, limit=200)
+            spotted_items = database.get_spotted_queue_items(self.db_path, limit=200)
             count = render.render_html(
                 output_path=self.output_path,
                 queue_items=queue_items,
                 summary=summary,
                 recent_runs=recent_runs,
+                skipped_items=skipped_items,
+                backlog_items=backlog_items,
+                spotted_items=spotted_items,
                 api_base=self.prefix,
             )
             return 200, "application/json", _json({"ok": True, "rendered": count})

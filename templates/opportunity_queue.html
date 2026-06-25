@@ -471,6 +471,10 @@
     onclick="switchMainTab('filtered')">
     Filtered <span class="tab-count">{{ filtered_total }}</span>
   </button>
+  <button type="button" class="tab-btn" id="tab-btn-spotted" aria-selected="false"
+    onclick="switchMainTab('spotted')">
+    Already spotted <span class="tab-count">{{ spotted_items|length }}</span>
+  </button>
 </div>
 
 <div id="panel-active" class="tab-panel active" role="tabpanel">
@@ -757,6 +761,50 @@
 </div>
 </div><!-- #panel-filtered -->
 
+<div id="panel-spotted" class="tab-panel" role="tabpanel">
+<div class="container">
+  <div class="section">
+    <div class="section-header">
+      <h2>Already spotted</h2>
+      <span class="section-count">{{ spotted_items|length }}</span>
+    </div>
+    {% if not spotted_items %}
+    <div class="section-empty">No threads with an existing quizly.pub link yet.</div>
+    {% else %}
+    <p style="font-size:12px;color:var(--muted);margin-bottom:12px;">
+      These threads already contain a quizly.pub link (in the comments or the post itself),
+      so they were kept out of the main queue. Useful to track reach — and to avoid posting a duplicate.
+    </p>
+    {% for item in spotted_items %}
+    <div class="card" style="opacity:0.9;border-left:3px solid var(--green);">
+      <div class="card-header">
+        <div class="card-title">
+          <a href="{{ item.target_url }}" target="_blank" rel="noopener">{{ item.title_snapshot }}</a>
+        </div>
+        <div class="card-badges">
+          <span class="badge badge-platform-{{ item.platform }}">{{ item.platform }}</span>
+          <span class="badge" style="background:var(--badge-approved);color:var(--badge-approved-text);">spotted</span>
+        </div>
+      </div>
+      {% if item.target_name %}<div class="target-link">→ {{ item.target_name }}</div>{% endif %}
+      {% if item.recommended_cta %}
+      <div style="font-size:12px;padding:4px 0;">
+        Link found: <a href="{{ item.recommended_cta if '://' in item.recommended_cta else 'https://' ~ item.recommended_cta }}" target="_blank" rel="noopener">{{ item.recommended_cta }}</a>
+      </div>
+      {% endif %}
+      {% if item.body_snapshot %}
+      <div class="why-now" style="background:#f0fbf3;border-color:#b2e6c4;font-size:12px;">{{ item.body_snapshot[:300] }}{% if item.body_snapshot|length > 300 %}…{% endif %}</div>
+      {% endif %}
+      <div style="font-size:11px;color:var(--muted);padding-top:6px;">
+        Seen: {{ item.last_seen_at | fmt_date }}
+      </div>
+    </div>
+    {% endfor %}
+    {% endif %}
+  </div>
+</div>
+</div><!-- #panel-spotted -->
+
 <script>
 /* api_base is patched when served through ai-home-hub (hub_module._patch_served_html_api_base). */
 const API_BASE = {{ api_base | tojson }};
@@ -782,7 +830,7 @@ function slugForClass(s) {
 }
 
 function switchMainTab(which) {
-  const tabs = ["active", "expired", "filtered"];
+  const tabs = ["active", "expired", "filtered", "spotted"];
   tabs.forEach(t => {
     const btn = document.getElementById("tab-btn-" + t);
     const panel = document.getElementById("panel-" + t);

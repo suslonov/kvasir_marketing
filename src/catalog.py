@@ -25,6 +25,26 @@ def _load_catalog() -> dict:
     return yaml.safe_load(_CATALOG_PATH.read_text(encoding="utf-8")) or {}
 
 
+# Matches an existing quizly.pub / kvasir.pub mention (optionally with scheme,
+# www, and path). Used to spot threads where someone already dropped our link.
+_QUIZLY_MENTION_RE = re.compile(
+    r"(?:https?://)?(?:www\.)?(?:quizly|kvasir)\.pub(?:/[^\s)\]\"'>]*)?",
+    re.IGNORECASE,
+)
+
+
+def find_quizly_mention(*texts: str) -> Optional[str]:
+    """Return the first quizly.pub/kvasir.pub mention found across the given
+    texts, or None. Used to detect threads where our link is already present."""
+    for text in texts:
+        if not text:
+            continue
+        m = _QUIZLY_MENTION_RE.search(text)
+        if m:
+            return m.group(0)
+    return None
+
+
 def reading_hall_url() -> str:
     return _load_catalog().get("reading_hall_url", "https://quizly.pub/books")
 
@@ -65,6 +85,35 @@ def persona_cta() -> str:
     )
 
 
+def entertainment_cta() -> str:
+    return _load_catalog().get(
+        "entertainment_cta",
+        "there's a fun one where you chat with animal characters and people vote on the "
+        "funniest answers — you can try it free, no login, at quizly.pub/welcome/8",
+    )
+
+
+def welcome_contests() -> list[dict]:
+    """Live welcome-page contest entries the classifier can deep-link to."""
+    return _load_catalog().get("welcome_contests", [])
+
+
+def format_welcome_contests() -> str:
+    """Render the welcome-contest catalog as a markdown bullet list for the prompt."""
+    base = welcome_url().rstrip("/")
+    lines = []
+    for c in welcome_contests():
+        cid = c.get("id")
+        if cid is None:
+            continue
+        lines.append(
+            f"- {base}/{cid} — \"{c.get('title', '')}\" "
+            f"[lang={c.get('lang', 'en')}, vibe={c.get('vibe', '')}] — "
+            f"good for: {c.get('theme', '')}"
+        )
+    return "\n".join(lines)
+
+
 def _game_subreddits() -> set[str]:
     catalog = _load_catalog()
     return {s.lower() for s in catalog.get("game_subreddits", [])}
@@ -78,6 +127,11 @@ def _persona_subreddits() -> set[str]:
 def _ai_video_subreddits() -> set[str]:
     catalog = _load_catalog()
     return {s.lower() for s in catalog.get("ai_video_subreddits", [])}
+
+
+def _entertainment_subreddits() -> set[str]:
+    catalog = _load_catalog()
+    return {s.lower() for s in catalog.get("entertainment_subreddits", [])}
 
 
 @lru_cache(maxsize=1)
@@ -122,6 +176,11 @@ def is_ai_video_subreddit(subreddit: str) -> bool:
     return subreddit.lower() in _ai_video_subreddits()
 
 
+def is_entertainment_subreddit(subreddit: str) -> bool:
+    """Return True if the subreddit is an entertainment / fun / animal community."""
+    return subreddit.lower() in _entertainment_subreddits()
+
+
 def build_book_context(title: str, body: str, parent_target: str) -> dict[str, str]:
     """
     Return a context dict for the Claude prompt with book/game/persona detection.
@@ -142,6 +201,7 @@ def build_book_context(title: str, body: str, parent_target: str) -> dict[str, s
     game = is_game_subreddit(parent_target)
     persona = is_persona_subreddit(parent_target)
     ai_video = is_ai_video_subreddit(parent_target)
+    entertainment = is_entertainment_subreddit(parent_target)
 
     return {
         "book_match": match or "",
@@ -151,7 +211,10 @@ def build_book_context(title: str, body: str, parent_target: str) -> dict[str, s
         "welcome_url": welcome_url(),
         "welcome_cta": welcome_cta(),
         "persona_cta": persona_cta(),
+        "entertainment_cta": entertainment_cta(),
+        "welcome_contests": format_welcome_contests(),
         "is_game_community": "true" if game else "false",
         "is_persona_community": "true" if persona else "false",
         "is_ai_video_community": "true" if ai_video else "false",
+        "is_entertainment_community": "true" if entertainment else "false",
     }

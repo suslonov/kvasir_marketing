@@ -23,6 +23,7 @@ class PlacementType(str, Enum):
     organic_post = "organic_post"
     paid_ad_target = "paid_ad_target"
     monitor = "monitor"
+    already_spotted = "already_spotted"
     skip = "skip"
 
 
@@ -33,6 +34,7 @@ class QueueStatus(str, Enum):
     rejected = "rejected"
     posted = "posted"
     expired = "expired"
+    spotted = "spotted"
 
 
 class TargetType(str, Enum):
@@ -64,6 +66,11 @@ class CandidateItem(BaseModel):
     published_at: Optional[datetime] = None
     discovered_at: datetime = Field(default_factory=datetime.utcnow)
     raw_json: Optional[str] = None
+
+    # Transient (not persisted to candidate_items): set when an existing
+    # quizly.pub/kvasir.pub link is already present in the thread or its comments.
+    spotted_quizly: bool = False
+    spotted_context: str = ""
 
     @field_validator("title")
     @classmethod

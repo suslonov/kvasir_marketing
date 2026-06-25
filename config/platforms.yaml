@@ -6,26 +6,40 @@ platforms:
     collector: reddit_browser
     browser_profile_dir: ~/.kvasir/browser_profiles/reddit_profile
     headless: true
-    max_posts_per_target: 12
-    max_targets_per_run: 8   # random sample size per pipeline run
+    max_posts_per_target: 20   # wider: more posts scanned per subreddit
+    max_targets_per_run: 14    # wider: sample more targets per pipeline run
     inter_request_delay_min: 2.0   # seconds — random sleep between targets
     inter_request_delay_max: 5.0
-    max_consecutive_failures: 3    # exclude target after this many empty runs in a row
+    max_consecutive_failures: 4    # wider: give targets more chances before exclusion
     discovery:
       enabled: true
       inter_request_delay_min: 2.0
       inter_request_delay_max: 4.0
-      min_subscribers: 5000
+      min_subscribers: 2000      # wider: include smaller niche communities
       queries:
-        - "books reading literature"
         - "ai learning education"
         - "quiz trivia games"
-        - "classic literature"
         - "book recommendations"
         - "interactive learning"
-        # Russian-language discovery
+        # Entertainment / fun / animals (new emphasis)
+        - "animals cute funny"
+        - "talk to ai character fun"
+        - "memes pop culture"
+        - "writing prompts short stories"
+        # Wider net — general-interest & adjacent communities
+        - "movies tv shows fandom"
+        - "history mythology stories"
+        - "trivia quiz night"
+        - "hobbies casual fun"
+        - "ai art creative tools"
+        - "language learning practice"
+        # Russian-language discovery (expanded)
         - "русская литература книги"
         - "что почитать литература ИИ"
+        - "мемы приколы юмор"
+        - "русский чат бот персонажи ИИ"
+        - "фильмы сериалы фэндом"
+        - "история мифология факты"
     targets:
       - type: subreddit:hot
         value: books
@@ -67,7 +81,30 @@ platforms:
         value: "reading quiz"
       - type: subreddit:search
         value: "book discussion AI"
-      # Russian-language communities & global search (Cyrillic)
+      # ── Entertainment / fun / animals (new emphasis) ──────────────────────
+      # Lead with playful AI chat / Animal Stories — not books.
+      - type: subreddit:hot
+        value: aww
+      - type: subreddit:hot
+        value: Awwducational
+      - type: subreddit:hot
+        value: NatureIsFuckingLit
+      - type: subreddit:hot
+        value: likeus
+      - type: subreddit:hot
+        value: WritingPrompts
+      - type: subreddit:new
+        value: WritingPrompts
+      - type: subreddit:hot
+        value: tipofmytongue
+      - type: subreddit:hot
+        value: CasualConversation
+      - type: subreddit:search
+        value: "talk to ai character fun"
+      - type: subreddit:search
+        value: "funny animal story"
+
+      # Russian-language communities & global search (Cyrillic) — expanded
       - type: subreddit:hot
         value: RussianLiterature
       - type: subreddit:new
@@ -77,6 +114,10 @@ platforms:
       - type: subreddit:hot
         value: russian
       - type: subreddit:hot
+        value: AskARussian
+      - type: subreddit:hot
+        value: Pikabu
+      - type: subreddit:hot
         value: learnrussian
       - type: subreddit:search
         value: "что почитать книги"
@@ -84,6 +125,10 @@ platforms:
         value: "русская литература обсуждение"
       - type: subreddit:search
         value: "книги ИИ чтение приложение"
+      - type: subreddit:search
+        value: "чат с персонажем ИИ нейросеть"
+      - type: subreddit:search
+        value: "мемы приколы конкурс"
 
       # ── CharacterAI / AI persona communities ──────────────────────────────
       # Echo contests = "AI chat with a literary character" → natural fit for
@@ -167,11 +212,17 @@ platforms:
   youtube:
     enabled: true
     collector: youtube
-    max_posts_per_target: 10     # videos per search query
-    max_targets_per_run: 10      # wider pool — sample more queries per pipeline run
+    max_posts_per_target: 15     # wider: more videos per search query
+    max_targets_per_run: 16      # wider: sample more queries per pipeline run
     inter_request_sleep_min: 1.5 # seconds — random sleep between API calls
     inter_request_sleep_max: 3.5
-    fetch_top_comment: true      # fetch top comment for each video (costs 1 quota unit each)
+    fetch_top_comment: true      # fetch recent comments for each video (costs 1 quota unit each)
+    # ── Freshness filters ──
+    # Keep a video if it is recent OR still has a live conversation.
+    # An old video is allowed back in when its newest comment is fresh.
+    max_age_days: 365            # videos newer than this qualify on recency alone (0 = age never matters)
+    fresh_comment_days: 30       # an OLDER video is rescued if its newest comment is this fresh
+                                 # (needs fetch_top_comment; set 0 to disable the rescue)
     targets:
       # Core book / reading intent
       - type: video_search
@@ -194,21 +245,28 @@ platforms:
         value: "52 books reading challenge"
       - type: video_search
         value: "spoiler free book review deep dive"
-      # Video essay / lit-culture niches
+      # Entertainment / fun / animals (new emphasis — lead with play, not homework)
       - type: video_search
-        value: "why you should read this book essay"
+        value: "funny animal videos try not to laugh"
+      - type: video_search
+        value: "cute pets being derps compilation"
+      - type: video_search
+        value: "if animals could talk AI voice"
+      - type: video_search
+        value: "talk to AI characters fun app"
+      - type: video_search
+        value: "pop culture trivia challenge funny"
+      - type: video_search
+        value: "writing prompts story ideas generator"
+      - type: video_search
+        value: "what if alternate history scenario"
+      - type: video_search
+        value: "AI chat with movie characters funny"
+      # A couple of lit-culture niches kept (trimmed from the old heavy block)
       - type: video_search
         value: "dark academia reading aesthetic books"
       - type: video_search
-        value: "study with me literature exam"
-      - type: video_search
-        value: "AP English literature themes explained"
-      - type: video_search
         value: "Shakespeare explained for students"
-      - type: video_search
-        value: "poetry analysis explained simple"
-      - type: video_search
-        value: "learn language by reading novels tips"
       # AI / tools / interactive learning (Quizly-adjacent)
       - type: video_search
         value: "AI reading app review 2025"
@@ -291,5 +349,22 @@ platforms:
         region_code: RU
       - type: video_search
         value: "интерактивное обучение ИИ школа книги"
+        relevance_language: ru
+        region_code: RU
+      # Russian entertainment / fun (new emphasis)
+      - type: video_search
+        value: "смешные животные приколы подборка"
+        relevance_language: ru
+        region_code: RU
+      - type: video_search
+        value: "нейросеть чат с персонажем смешно"
+        relevance_language: ru
+        region_code: RU
+      - type: video_search
+        value: "мемы про римскую империю тренд"
+        relevance_language: ru
+        region_code: RU
+      - type: video_search
+        value: "альтернативная история что если"
         relevance_language: ru
         region_code: RU

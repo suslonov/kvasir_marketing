@@ -9,6 +9,7 @@ from datetime import datetime, timedelta
 from pathlib import Path
 from typing import Any, Optional
 
+from src.catalog import find_quizly_mention
 from src.models import (
     CandidateItem,
     OpportunityDecision,
@@ -254,8 +255,8 @@ def get_open_queue_items(
     with _connect(db_path) as conn:
         base = """
             SELECT * FROM opportunity_queue
-            WHERE status NOT IN ('expired', 'skip')
-            AND placement_type != 'skip'
+            WHERE status NOT IN ('expired', 'skip', 'spotted')
+            AND placement_type NOT IN ('skip', 'already_spotted')
         """
         params: list = []
         if platform:
@@ -472,6 +473,65 @@ def get_skipped_queue_items(db_path: Path, limit: int = 100) -> list[dict]:
         return [dict(r) for r in rows]
 
 
+def upsert_spotted_opportunity(db_path: Path, candidate: CandidateItem) -> None:
+    """Persist a thread where a quizly.pub link is already present (in comments
+    or the post itself), so it shows in the 'Already spotted' view instead of
+    the main queue. No Claude evaluation is needed for these."""
+    now = datetime.utcnow().isoformat()
+    context = (candidate.spotted_context or "")[:500]
+    with _connect(db_path) as conn:
+        existing = conn.execute(
+            """SELECT id FROM opportunity_queue
+               WHERE platform = ? AND platform_object_id = ?
+               AND placement_type = 'already_spotted'""",
+            (candidate.platform.value, candidate.platform_object_id),
+        ).fetchone()
+
+        if existing:
+            conn.execute(
+                """UPDATE opportunity_queue SET
+                    title_snapshot = ?, body_snapshot = ?, why_now = ?,
+                    last_seen_at = ?, updated_at = ?
+                   WHERE id = ?""",
+                (
+                    candidate.title, context,
+                    "A quizly.pub link is already present in this thread.",
+                    now, now, existing["id"],
+                ),
+            )
+        else:
+            conn.execute(
+                """INSERT INTO opportunity_queue (
+                    platform, placement_type, target_name, target_url,
+                    platform_object_id, title_snapshot, body_snapshot,
+                    why_now, recommended_cta,
+                    status, created_at, updated_at, last_seen_at
+                ) VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?)""",
+                (
+                    candidate.platform.value, "already_spotted",
+                    candidate.parent_target or "", candidate.url,
+                    candidate.platform_object_id,
+                    candidate.title, context,
+                    "A quizly.pub link is already present in this thread.",
+                    find_quizly_mention(context, candidate.body_excerpt, candidate.title) or "",
+                    "spotted", now, now, now,
+                ),
+            )
+
+
+def get_spotted_queue_items(db_path: Path, limit: int = 200) -> list[dict]:
+    """Return threads where a quizly.pub link was already spotted."""
+    with _connect(db_path) as conn:
+        rows = conn.execute(
+            """SELECT * FROM opportunity_queue
+               WHERE placement_type = 'already_spotted'
+               ORDER BY updated_at DESC
+               LIMIT ?""",
+            (limit,),
+        ).fetchall()
+        return [dict(r) for r in rows]
+
+
 def get_unevaluated_candidates(
     db_path: Path,
     limit: int = 100,
@@ -509,7 +569,7 @@ def queue_counts_by_platform(db_path: Path) -> dict[str, int]:
     with _connect(db_path) as conn:
         rows = conn.execute(
             """SELECT platform, COUNT(*) as cnt FROM opportunity_queue
-               WHERE status NOT IN ('expired', 'skip') GROUP BY platform"""
+               WHERE status NOT IN ('expired', 'skip', 'spotted') GROUP BY platform"""
         ).fetchall()
         return {r["platform"]: r["cnt"] for r in rows}
 

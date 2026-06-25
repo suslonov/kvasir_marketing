@@ -27,7 +27,7 @@ import logging
 import os
 import random
 import time
-from datetime import datetime, timezone
+from datetime import datetime, timedelta, timezone
 from typing import Any, Optional
 from urllib.parse import urlencode
 
@@ -68,13 +68,46 @@ class YouTubeCollector:
         max_targets_per_run: int = 5,
         fetch_top_comment: bool = True,
         inter_request_sleep: tuple[float, float] = (1.5, 3.5),
+        max_age_days: int = 365,
+        fresh_comment_days: int = 30,
     ) -> None:
         self.api_key = api_key
         self.max_results = max_results
         self.max_targets_per_run = max_targets_per_run
         self.fetch_top_comment = fetch_top_comment
         self.inter_request_sleep = inter_request_sleep
+        # A video qualifies on recency alone if published within this window
+        # (0 = no recency requirement → age never disqualifies a video).
+        self.max_age_days = max(0, int(max_age_days))
+        # An OLDER video is rescued if its newest comment falls within this window
+        # — i.e. the conversation is still alive (0 disables the rescue).
+        # Needs fetch_top_comment to be on, since that's where comment dates come from.
+        self.fresh_comment_days = max(0, int(fresh_comment_days))
         self._client = httpx.Client(timeout=_REQUEST_TIMEOUT)
+
+    # ── Freshness helpers ─────────────────────────────────────────────────────
+
+    def _video_recent(self, published_at: Optional[datetime]) -> bool:
+        """True if the video is recent enough to qualify on its own.
+
+        Unknown publish dates are treated as recent (we don't penalise on
+        missing data). max_age_days == 0 means age never disqualifies anything.
+        """
+        if not self.max_age_days or published_at is None:
+            return True
+        cutoff = datetime.now(timezone.utc) - timedelta(days=self.max_age_days)
+        return published_at >= cutoff
+
+    def _comment_fresh(self, last_comment_at: Optional[datetime]) -> bool:
+        """True if the newest comment is within fresh_comment_days (a live thread).
+
+        Disabled (returns False) when fresh_comment_days == 0 or when we have no
+        datable comment to judge by.
+        """
+        if not self.fresh_comment_days or last_comment_at is None:
+            return False
+        cutoff = datetime.now(timezone.utc) - timedelta(days=self.fresh_comment_days)
+        return last_comment_at >= cutoff
 
     # ── Public interface ──────────────────────────────────────────────────────
 
@@ -148,7 +181,9 @@ class YouTubeCollector:
             vid = item.get("id", {}).get("videoId")
             if not vid:
                 continue
-            candidates.append(self._build_candidate(item["snippet"], vid, stats.get(vid, {}), query))
+            cand = self._build_candidate(item["snippet"], vid, stats.get(vid, {}), query)
+            if cand is not None:
+                candidates.append(cand)
         return candidates
 
     # ── channel ───────────────────────────────────────────────────────────────
@@ -179,9 +214,11 @@ class YouTubeCollector:
             vid = item.get("id", {}).get("videoId")
             if not vid:
                 continue
-            candidates.append(
-                self._build_candidate(item["snippet"], vid, stats.get(vid, {}), channel_id_or_handle)
+            cand = self._build_candidate(
+                item["snippet"], vid, stats.get(vid, {}), channel_id_or_handle
             )
+            if cand is not None:
+                candidates.append(cand)
         return candidates
 
     # ── Build CandidateItem ───────────────────────────────────────────────────
@@ -192,19 +229,8 @@ class YouTubeCollector:
         video_id: str,
         stats: dict,
         parent_target: str,
-    ) -> CandidateItem:
-        like_count = int(stats.get("likeCount", 0) or 0)
-        comment_count = int(stats.get("commentCount", 0) or 0)
-        view_count = int(stats.get("viewCount", 0) or 0)
-
-        description = (snippet.get("description") or "").strip()[:400]
-        top_comment = ""
-        if self.fetch_top_comment and comment_count > 0:
-            top_comment = self._fetch_top_comment(video_id) or ""
-
-        body_parts = [p for p in [description, top_comment] if p]
-        body_excerpt = "\n\n[top comment] ".join(body_parts) if top_comment else description
-
+    ) -> Optional[CandidateItem]:
+        """Build a CandidateItem, or return None if it fails a freshness filter."""
         published_raw = snippet.get("publishedAt", "")
         try:
             published_at: Optional[datetime] = datetime.fromisoformat(
@@ -213,19 +239,53 @@ class YouTubeCollector:
         except (ValueError, AttributeError):
             published_at = None
 
+        like_count = int(stats.get("likeCount", 0) or 0)
+        comment_count = int(stats.get("commentCount", 0) or 0)
+        view_count = int(stats.get("viewCount", 0) or 0)
+
+        description = (snippet.get("description") or "").strip()[:400]
+        title = snippet.get("title", "").strip()
+        top_comment = ""
+        last_comment_at: Optional[datetime] = None
+        spotted_comment = ""
+        if self.fetch_top_comment and comment_count > 0:
+            top_comment, last_comment_at, spotted_comment = self._fetch_comment_info(video_id)
+
+        # Keep a video if it is EITHER recently published OR still has a live
+        # conversation (a fresh comment). Drop only when it's old AND quiet.
+        if not self._video_recent(published_at) and not self._comment_fresh(last_comment_at):
+            logger.debug(
+                "YouTube: skipping %s — older than %dd and no comment within %dd",
+                video_id, self.max_age_days, self.fresh_comment_days,
+            )
+            return None
+
+        body_parts = [p for p in [description, top_comment] if p]
+        body_excerpt = "\n\n[recent comment] ".join(body_parts) if top_comment else description
+
+        # An existing quizly link in the comments (or the video's own
+        # description/title) means the audience was already reached here.
+        from src.catalog import find_quizly_mention
+        spotted_context = spotted_comment or (find_quizly_mention(title, description) or "")
+
         return CandidateItem(
             platform=Platform.youtube,
             platform_object_id=video_id,
             parent_target=parent_target,
             url=f"{_WATCH}{video_id}",
-            title=snippet.get("title", "").strip(),
+            title=title,
             body_excerpt=body_excerpt,
             author=snippet.get("channelTitle", "").strip(),
             score=like_count,
             comment_count=comment_count,
             published_at=published_at,
             discovered_at=datetime.now(timezone.utc),
-            raw_json=json.dumps({"view_count": view_count}),
+            spotted_quizly=bool(spotted_context),
+            spotted_context=spotted_context,
+            raw_json=json.dumps({
+                "view_count": view_count,
+                "last_comment_at": last_comment_at.isoformat() if last_comment_at else None,
+            }),
         )
 
     # ── API helpers ───────────────────────────────────────────────────────────
@@ -257,31 +317,62 @@ class YouTubeCollector:
             for item in data.get("items", [])
         }
 
-    def _fetch_top_comment(self, video_id: str) -> str:
-        """Return the text of the top (most-liked) comment, or empty string."""
+    def _fetch_comment_info(
+        self, video_id: str
+    ) -> tuple[str, Optional[datetime], str]:
+        """Return (representative recent comment, newest-comment timestamp,
+        spotted-quizly comment).
+
+        Fetches the most recent comments (order=time) in a single call, so we
+        learn how fresh the conversation is, get a good comment for context, and
+        notice whether someone already dropped a quizly.pub link in the comments.
+        The displayed comment is the most-liked among the recent batch.
+        """
+        from src.catalog import find_quizly_mention
+
         try:
             params = {
                 "part": "snippet",
                 "videoId": video_id,
-                "maxResults": 1,
-                "order": "relevance",
+                "maxResults": 20,
+                "order": "time",
                 "textFormat": "plainText",
             }
             data = self._get("commentThreads", params)
             items = data.get("items", [])
             if not items:
-                return ""
-            text = (
-                items[0]
-                .get("snippet", {})
-                .get("topLevelComment", {})
-                .get("snippet", {})
-                .get("textDisplay", "")
-            )
-            return text.strip()[:300]
+                return "", None, ""
+
+            best_text = ""
+            best_likes = -1
+            last_comment_at: Optional[datetime] = None
+            spotted_comment = ""
+            for it in items:
+                top = it.get("snippet", {}).get("topLevelComment", {}).get("snippet", {})
+                ts = self._parse_dt(top.get("publishedAt") or top.get("updatedAt"))
+                if ts and (last_comment_at is None or ts > last_comment_at):
+                    last_comment_at = ts
+                text = (top.get("textDisplay", "") or "").strip()
+                if not spotted_comment and find_quizly_mention(text):
+                    spotted_comment = text
+                likes = int(top.get("likeCount", 0) or 0)
+                if likes > best_likes:
+                    best_likes = likes
+                    best_text = text
+
+            return best_text[:300], last_comment_at, spotted_comment[:300]
         except Exception as exc:
-            logger.debug("Could not fetch top comment for %s: %s", video_id, exc)
-            return ""
+            logger.debug("Could not fetch comments for %s: %s", video_id, exc)
+            return "", None, ""
+
+    @staticmethod
+    def _parse_dt(raw: Optional[str]) -> Optional[datetime]:
+        if not raw:
+            return None
+        try:
+            return datetime.fromisoformat(raw.replace("Z", "+00:00"))
+        except (ValueError, AttributeError):
+            return None
 
     def _resolve_channel_id(self, handle_or_id: str) -> Optional[str]:
         """Resolve a @handle or channel name to a channelId."""
@@ -314,6 +405,8 @@ def collect(
     max_targets_per_run: int = 5,
     fetch_top_comment: bool = True,
     inter_request_sleep: tuple[float, float] = (1.5, 3.5),
+    max_age_days: int = 365,
+    fresh_comment_days: int = 30,
     **kwargs: Any,
 ) -> list[CandidateItem]:
     if not api_key:
@@ -325,6 +418,8 @@ def collect(
         max_targets_per_run=max_targets_per_run,
         fetch_top_comment=fetch_top_comment,
         inter_request_sleep=inter_request_sleep,
+        max_age_days=max_age_days,
+        fresh_comment_days=fresh_comment_days,
     )
     return collector.collect(targets)
 

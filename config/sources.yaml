@@ -2,38 +2,55 @@ global:
   timezone: "UTC"
   db_path: "~/social_scanner/state.db"
   output_html: "~/social_scanner/rendered/index.html"
-  max_items_per_subreddit: 50
-  max_claude_batch_size: 40
-  min_score: 10
-  min_comments: 5
-  item_age_limit_hours: 72
+  max_items_per_subreddit: 75   # wider: collect more per subreddit
+  max_claude_batch_size: 50     # wider: evaluate more candidates per run
+  min_score: 5                  # wider: lower engagement gate (was 10)
+  min_comments: 3               # wider: lower comment gate (was 5)
+  item_age_limit_hours: 120     # wider: consider posts up to 5 days old (was 72)
   claude_model: "claude-sonnet-4-6"
   claude_max_tokens: 4096
   reddit_request_delay_seconds: 1.0
   book_list_path: "~/git/kvasir_proto/src/html/kvasir.pub/book-list.txt"
 
 subreddits:
-  # Books / reading
+  # Books / reading (kept, but trimmed — we were over-indexed on heavy literary)
   - name: books
-    enabled: true
-  - name: bookclub
     enabled: true
   - name: suggestmeabook
     enabled: true
-  - name: classics
-    enabled: true
-  - name: literature
+  - name: booksuggestions
     enabled: true
   - name: 52book
     enabled: true
-  - name: booksuggestions
-    enabled: true
+  - name: bookclub
+    enabled: false
+  - name: classics
+    enabled: false        # too heavy-literary; de-prioritized
+  - name: literature
+    enabled: false        # too heavy-literary; de-prioritized
   - name: whattoreadwhen
     enabled: true
   # Specific authors / classic literature
   - name: dostoevsky
     enabled: true
   - name: Sherlock
+    enabled: true
+  # Entertainment / fun / animals (new emphasis — lead with play, not homework)
+  - name: aww
+    enabled: true
+  - name: Awwducational
+    enabled: true
+  - name: AnimalsBeingDerps
+    enabled: true
+  - name: NatureIsFuckingLit
+    enabled: true
+  - name: likeus
+    enabled: true
+  - name: WritingPrompts
+    enabled: true
+  - name: tipofmytongue
+    enabled: true
+  - name: CasualConversation
     enabled: true
   # AI / tech
   - name: ChatGPT
@@ -58,10 +75,20 @@ subreddits:
     enabled: true
   - name: puzzles
     enabled: true
-  # Russian-language communities
+  # Russian-language communities (expanded — large, underserved audience)
   - name: ru
     enabled: true
   - name: RussianLiterature
+    enabled: true
+  - name: russian
+    enabled: true
+  - name: AskARussian
+    enabled: true
+  - name: Pikabu
+    enabled: true
+  - name: Tiktokcringe   # RU meme/entertainment crossover
+    enabled: false
+  - name: 2ch
     enabled: true
   # AI video / creative contest communities (new — scene/video contest angle)
   - name: aigeneratedart
@@ -134,7 +161,26 @@ include_keywords:
   - tabletop game
   - quiz night
   - pub quiz
-  # Russian keywords
+  # Entertainment / fun / animals (new emphasis)
+  - funny
+  - cute
+  - animal story
+  - my cat
+  - my dog
+  - pet
+  - wholesome
+  - just for fun
+  - talk to a character
+  - chat with character
+  - roleplay
+  - meme
+  - pop culture
+  - guess the
+  - writing prompt
+  - short story
+  - what if
+  - alternate history
+  # Russian keywords (books)
   - книга
   - книги
   - книжный клуб
@@ -150,6 +196,19 @@ include_keywords:
   - викторина
   - интерактивное обучение
   - ИИ для
+  # Russian keywords (entertainment / fun)
+  - смешно
+  - мемы
+  - котики
+  - животные
+  - персонаж
+  - поговорить с
+  - чат с персонажем
+  - ролевая
+  - конкурс
+  - приколы
+  - что если
+  - альтернативная история
 
 exclude_keywords:
   - porn

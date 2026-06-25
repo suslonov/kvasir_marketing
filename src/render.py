@@ -142,6 +142,7 @@ def render_html(
     recent_runs: Optional[list[dict[str, Any]]] = None,
     skipped_items: Optional[list[dict[str, Any]]] = None,
     backlog_items: Optional[list[dict[str, Any]]] = None,
+    spotted_items: Optional[list[dict[str, Any]]] = None,
     # Legacy keyword (old tests pass opportunities= positional)
     opportunities: Optional[list[dict[str, Any]]] = None,
     api_base: str = "",
@@ -159,10 +160,13 @@ def render_html(
         skipped_items = []
     if backlog_items is None:
         backlog_items = []
+    if spotted_items is None:
+        spotted_items = []
 
     # Normalize legacy item shapes to new queue item field names
     queue_items = [_normalize_item(item) for item in queue_items]
     skipped_items = [_normalize_item(item) for item in skipped_items]
+    spotted_items = [_normalize_item(item) for item in spotted_items]
 
     output_path.parent.mkdir(parents=True, exist_ok=True)
 
@@ -203,6 +207,7 @@ def render_html(
         api_base=api_base,
         skipped_items=skipped_items,
         backlog_items=backlog_items,
+        spotted_items=spotted_items,
     )
 
     output_path.write_text(html, encoding="utf-8")

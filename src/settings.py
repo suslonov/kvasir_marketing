@@ -98,6 +98,18 @@ def get_fetch_top_comment(platforms_cfg: dict[str, Any]) -> bool:
     return bool(p.get("fetch_top_comment", True))
 
 
+def get_youtube_max_age_days(platforms_cfg: dict[str, Any]) -> int:
+    """Video age (days) that qualifies on recency alone (0 = age never disqualifies)."""
+    p = platforms_cfg.get("platforms", {}).get("youtube", {})
+    return int(p.get("max_age_days", 365))
+
+
+def get_youtube_fresh_comment_days(platforms_cfg: dict[str, Any]) -> int:
+    """Rescue an older video if its newest comment is within this many days (0 disables)."""
+    p = platforms_cfg.get("platforms", {}).get("youtube", {})
+    return int(p.get("fresh_comment_days", 30))
+
+
 def get_twitter_delay_seconds(platforms_cfg: dict[str, Any]) -> float:
     p = platforms_cfg.get("platforms", {}).get("twitter", {})
     return float(p.get("delay_seconds", 2.0))

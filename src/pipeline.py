@@ -20,6 +20,8 @@ from src.settings import (
     get_twitter_delay_seconds,
     get_twitter_max_items_per_target,
     get_youtube_api_key,
+    get_youtube_fresh_comment_days,
+    get_youtube_max_age_days,
     is_platform_enabled,
     load_platforms_config,
     project_root,
@@ -65,6 +67,7 @@ def run_pipeline(
         "after_filter": 0,
         "queued": 0,
         "expired": 0,
+        "spotted": 0,
         "errors": [],
     }
 
@@ -114,6 +117,18 @@ def run_pipeline(
             seen.add(key)
             unique_candidates.append(c)
 
+    # ── 2b. Split off threads where a quizly link is already present ────────────
+    # These go to the "Already spotted" view, not the main queue or Claude.
+    spotted, unique_candidates = _partition_spotted(unique_candidates)
+    if spotted:
+        logger.info("Already spotted (quizly link present): %d threads", len(spotted))
+        for candidate in spotted:
+            try:
+                db.upsert_spotted_opportunity(db_path, candidate)
+            except Exception as exc:
+                logger.warning("Failed to record spotted item '%s': %s", candidate.title[:60], exc)
+    stats["spotted"] = len(spotted)
+
     # ── 3. Pre-score and filter ────────────────────────────────────────────────
     min_score = app_config.global_config.min_score if app_config else 10
     min_comments = app_config.global_config.min_comments if app_config else 5
@@ -149,12 +164,14 @@ def run_pipeline(
         recent_runs = db.get_recent_runs(db_path, limit=5)
         skipped_items = db.get_skipped_queue_items(db_path, limit=200)
         backlog_items = db.get_unevaluated_candidates(db_path, limit=200)
+        spotted_items = db.get_spotted_queue_items(db_path, limit=200)
         render.render_html(
             queue_items=queue_items,
             summary=summary,
             recent_runs=recent_runs,
             skipped_items=skipped_items,
             backlog_items=backlog_items,
+            spotted_items=spotted_items,
             output_path=output_path,
         )
         logger.info("Rendered %d queue items to %s", len(queue_items), output_path)
@@ -174,6 +191,28 @@ def run_pipeline(
 
     stats["finished_at"] = datetime.now(timezone.utc).isoformat()
     return stats
+
+
+def _partition_spotted(
+    candidates: list[CandidateItem],
+) -> tuple[list[CandidateItem], list[CandidateItem]]:
+    """Split candidates into (already-spotted, rest).
+
+    A candidate is 'spotted' if a collector already flagged a quizly link (e.g.
+    in YouTube comments), or if one appears in the title/body we collected.
+    """
+    from src.catalog import find_quizly_mention
+
+    spotted: list[CandidateItem] = []
+    rest: list[CandidateItem] = []
+    for c in candidates:
+        if not c.spotted_quizly:
+            match = find_quizly_mention(c.title, c.body_excerpt)
+            if match:
+                c.spotted_quizly = True
+                c.spotted_context = c.spotted_context or c.body_excerpt[:300] or match
+        (spotted if c.spotted_quizly else rest).append(c)
+    return spotted, rest
 
 
 def _evaluate_and_queue(
@@ -319,6 +358,8 @@ def _collect_youtube(platforms_config: dict[str, Any]) -> list[CandidateItem]:
             max_targets_per_run=max_targets,
             fetch_top_comment=get_fetch_top_comment(platforms_config),
             inter_request_sleep=get_inter_request_delay(platforms_config, "youtube"),
+            max_age_days=get_youtube_max_age_days(platforms_config),
+            fresh_comment_days=get_youtube_fresh_comment_days(platforms_config),
         )
     except YouTubeAPIError as exc:
         logger.error("YouTube API error (quota or key issue): %s", exc)

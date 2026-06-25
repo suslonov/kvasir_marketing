@@ -24,6 +24,70 @@ persona_cta: >
   you can build an AI chat as any literary character, share it, and let others
   vote on the best answers — try a live example at quizly.pub/welcome
 
+# Entertainment / fun CTA — use for animal, humour, pop-culture, meme,
+# "just for fun" contexts. Lead with play, not literature.
+entertainment_cta: >
+  there's a fun one where you chat with animal characters and people vote on the
+  funniest answers — you can try it free, no login, at quizly.pub/welcome/8
+
+# ── Live welcome-page contest entries ─────────────────────────────────────────
+# Each entry is a deep-linkable demo (quizly.pub/welcome/<id>) the visitor can
+# interact with immediately, no login. The classifier picks the single most
+# relevant entry for the CTA. "theme" drives matching; "lang" is the entry's
+# primary language; "vibe" is fun | light | classic | scene.
+welcome_contests:
+  - id: 8
+    title: "Animal Stories"
+    lang: en
+    vibe: fun
+    theme: "animals, pets, wildlife, cute/funny animal stories, nature"
+  - id: 11
+    title: "The old river-town world of Tom Sawyer"
+    lang: en
+    vibe: light
+    theme: "adventure, mischief, childhood, Mark Twain, light classics, Americana"
+  - id: 1
+    title: "Best Prince Hamlet storyteller"
+    lang: en
+    vibe: classic
+    theme: "Shakespeare, Hamlet, drama, classic literature, storytelling"
+  - id: 3
+    title: "The Origin of Species"
+    lang: en
+    vibe: classic
+    theme: "science, Darwin, evolution, non-fiction, big ideas"
+  - id: 9
+    title: "Hamlet video"
+    lang: en
+    vibe: scene
+    theme: "AI video, scene generation, Shakespeare, film, visual storytelling"
+  - id: 10
+    title: "Gaius Suetonius video"
+    lang: en
+    vibe: scene
+    theme: "AI video, history, Rome, ancient world, scene generation"
+  # ── Russian entries ──
+  - id: 2
+    title: "Думали ли вы о Римской Империи?"
+    lang: ru
+    vibe: fun
+    theme: "мемы, Римская империя, юмор, поп-культура, fun, memes, Roman Empire trend"
+  - id: 7
+    title: "Альтернативная история Второй Мировой"
+    lang: ru
+    vibe: fun
+    theme: "альтернативная история, что если, война, фантастика, alt-history, what-if"
+  - id: 12
+    title: "Алые паруса"
+    lang: ru
+    vibe: light
+    theme: "Грин, романтика, мечта, приключения, Scarlet Sails, romance, dream"
+  - id: 5
+    title: "Москва-Петушки"
+    lang: ru
+    vibe: classic
+    theme: "Ерофеев, постмодернизм, культовая проза, Russian cult classic"
+
 # Game / quiz subreddits — suggest quizly.pub (main site) instead of /books
 game_subreddits:
   - trivia
@@ -54,6 +118,30 @@ ai_video_subreddits:
   - StableDiffusion
   - midjourney
   - MediaSynthesis
+
+# Entertainment / fun subreddits — animals, humour, pop-culture, casual fun.
+# Lead with the entertainment_cta (Animal Stories / fun chat) NOT books.
+entertainment_subreddits:
+  - aww
+  - AnimalsBeingDerps
+  - AnimalsBeingBros
+  - NatureIsFuckingLit
+  - likeus
+  - rarepuppers
+  - cats
+  - dogs
+  - Awwducational
+  - funny
+  - HumansBeingBros
+  - mildlyinteresting
+  - tipofmytongue
+  - pics
+  - memes
+  - AskReddit
+  - CasualConversation
+  - todayilearned
+  - WritingPrompts
+  - shortstories
 
 # Authors — each entry has the canonical English name plus aliases used in
 # Reddit discussions (different transliterations, abbreviations, etc.).
