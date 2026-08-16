@@ -1,0 +1,67 @@
+# Subreddit link / self-promotion policy
+# ---------------------------------------
+# Drives whether the scanner suggests dropping a quizly.pub URL in a comment,
+# or a link-FREE, name-only mention. This exists because our first posting
+# attempts in strict subs (r/russian, r/RussianLiterature) were auto-removed by
+# Reddit's spam filter — see docs/reddit-removal-analysis.md.
+#
+# Three policies:
+#   link_safe  — community tolerates self-promo / links (or has promo threads).
+#                OK to include a quizly.pub deep link in the comment/post.
+#   no_link    — strict no-promo community. Mention Quizly by NAME only, never a
+#                URL in the visible text. (The link still goes in recommended_cta
+#                as a reference for the human operator.)
+# Anything NOT listed here is treated as "unknown" → default to link-free until a
+# human reviews and promotes it to link_safe. New accounts should treat even
+# link_safe subs cautiously (warm up first).
+
+# Communities that allow self-promotion / project sharing, or have dedicated
+# "show off / feedback / promo" threads. Prefer those threads when they exist.
+link_safe:
+  - SideProject
+  - InternetIsBeautiful
+  - roastmystartup
+  - SomebodyMakeThis
+  - IMadeThis
+  - indiebiz
+  - AlphaandBetausers
+  - growmybusiness
+  - SaaS
+  - EntrepreneurRideAlong
+  - WebGames
+  - incremental_games
+  - playmygame
+  - DestroyMyGame
+
+# Strict no-promotion / no-link communities. Name-drop only, no URL in the text.
+no_link:
+  - russian            # first removal happened here
+  - RussianLiterature  # first removal happened here
+  - books
+  - suggestmeabook
+  - writing
+  - literature
+  - learnprogramming
+  - artificial
+  - MachineLearning
+  - ChatGPT
+  - education
+  - Teachers
+  - homeschool
+  - AskReddit
+  - CharacterAI
+  - aww
+  - cats
+  - dogs
+  - todayilearned
+
+# Discovery: extra search queries aimed at finding promo-tolerant communities
+# (subreddits where it is actually safe to post a link). Merged into the
+# discovery query set so the agent recommends *where to post*, not only threads.
+discovery_link_safe_queries:
+  - "self promotion saturday"
+  - "show off your project"
+  - "feedback friday startup"
+  - "promote your app"
+  - "indie game showcase"
+  - "share what you made"

@@ -28,6 +28,7 @@ sys.path.insert(0, str(REPO_ROOT))
 CONFIG_DIR = REPO_ROOT / "config"
 DISCOVERED_PATH = CONFIG_DIR / "discovered_subreddits.yaml"
 PLATFORMS_PATH = CONFIG_DIR / "platforms.yaml"
+SUBREDDIT_POLICY_PATH = CONFIG_DIR / "subreddit_policy.yaml"
 
 logging.basicConfig(level=logging.INFO, format="%(levelname)s %(message)s")
 logger = logging.getLogger(__name__)
@@ -100,13 +101,40 @@ def _load_discovery_config() -> dict:
     return get_discovery_config(load_platforms_config(PLATFORMS_PATH))
 
 
+def _load_subreddit_policy() -> dict:
+    """Return the subreddit link/self-promo policy config (or empty dict)."""
+    if not SUBREDDIT_POLICY_PATH.exists():
+        return {}
+    return yaml.safe_load(SUBREDDIT_POLICY_PATH.read_text(encoding="utf-8")) or {}
+
+
+def _policy_link_safe_queries() -> list[str]:
+    return list(_load_subreddit_policy().get("discovery_link_safe_queries", []))
+
+
+def _initial_link_safe(name: str) -> str:
+    """Pre-fill a new subreddit's link policy from subreddit_policy.yaml."""
+    policy = _load_subreddit_policy()
+    lower = name.lower()
+    if lower in {s.lower() for s in policy.get("link_safe", [])}:
+        return "safe"
+    if lower in {s.lower() for s in policy.get("no_link", [])}:
+        return "no_link"
+    return "unknown"
+
+
 def discover_subreddits(headless: bool = True, dry_run: bool = False) -> list[dict]:
     """
     Use Playwright to search Reddit for new subreddits.
     Returns list of new subreddit dicts suitable for discovered_subreddits.yaml.
     """
     disc_cfg = _load_discovery_config()
-    queries: list[str] = disc_cfg.get("queries", _DEFAULT_DISCOVERY_QUERIES)
+    queries: list[str] = list(disc_cfg.get("queries", _DEFAULT_DISCOVERY_QUERIES))
+    # Also search for promo-tolerant communities (where it is safe to post a link),
+    # so we recommend *where to post*, not only which threads.
+    for q in _policy_link_safe_queries():
+        if q not in queries:
+            queries.append(q)
     delay_min: float = float(disc_cfg.get("inter_request_delay_min", _DEFAULT_DELAY_MIN))
     delay_max: float = float(disc_cfg.get("inter_request_delay_max", _DEFAULT_DELAY_MAX))
 
@@ -163,6 +191,8 @@ def discover_subreddits(headless: bool = True, dry_run: bool = False) -> list[di
                         sr["discovered_via"] = query
                         sr["discovered_at"] = str(date.today())
                         sr["enabled"] = False
+                        # Link-posting safety for the human to review before linking.
+                        sr["link_safe"] = _initial_link_safe(sr["name"])
                         candidates.append(sr)
                         new_count += 1
                 logger.info("Query %r → %d new subreddits", query, new_count)
@@ -230,7 +260,8 @@ def main() -> None:
 
     print(f"\nDiscovered {len(new_entries)} new subreddits:")
     for e in new_entries:
-        print(f"  r/{e['name']}  (via: {e.get('discovered_via', '?')})")
+        print(f"  r/{e['name']}  (via: {e.get('discovered_via', '?')}, "
+              f"link_safe: {e.get('link_safe', 'unknown')})")
 
     if args.dry_run:
         print("\n[dry-run] Not saved.")
@@ -239,6 +270,7 @@ def main() -> None:
     save_discovered(new_entries)
     print(f"\nSaved to {DISCOVERED_PATH}")
     print("Review the file and set `enabled: true` for subreddits you want to scan.")
+    print("Also confirm `link_safe` (safe/no_link) before posting any link there.")
 
 
 if __name__ == "__main__":

@@ -163,7 +163,7 @@ platforms:
 
       # ── Interactive fiction / narrative AI ────────────────────────────────
       # People already engaging with AI-driven stories; welcome page is a
-      # natural "try it free" demo with no login required.
+      # natural "try it free" demo to get them to sign up and play.
       - type: subreddit:hot
         value: interactivefiction
       - type: subreddit:hot

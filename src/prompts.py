@@ -65,10 +65,11 @@ def render_classifier_prompt(candidate: Any, pre_score: float = 0.0) -> str:
     title = candidate.title
     body = (candidate.body_excerpt or "")[:500]
 
-    book_ctx = build_book_context(title, body, parent_target)
+    platform = getattr(candidate.platform, "value", str(candidate.platform))
+    book_ctx = build_book_context(title, body, parent_target, platform=platform)
 
     variables = {
-        "platform": getattr(candidate.platform, "value", str(candidate.platform)),
+        "platform": platform,
         "parent_target": parent_target,
         "title": title,
         "body_excerpt": body,

@@ -9,15 +9,23 @@ quizly_url: "https://quizly.pub"
 welcome_url: "https://quizly.pub/welcome"
 contests_url: "https://quizly.pub/contests"
 
+# Specific book-page CTA — used when a particular book is matched and we can
+# deep-link quizly.pub/book/<id>. Always mention the AI book adviser. Write it
+# in the language of the thread (translate naturally for non-English threads).
+book_page_cta: >
+  on its page you can read it, talk it through with the AI book adviser,
+  generate a video scene from it, and enter contests
+
 # Reading Hall CTA text (used in recommendations when a book is mentioned)
 reading_hall_cta: >
   you can read the book, discuss it with our AI adviser, generate a video on
   the book, and take part in contests — all at quizly.pub/books
 
-# Welcome page CTA — use for top-of-funnel / no-login contexts
+# Welcome page CTA — use for top-of-funnel contexts. Write it in the language
+# of the thread (translate naturally for non-English threads).
 welcome_cta: >
-  you can try it immediately at quizly.pub/welcome — no login needed, just
-  pick a contest entry and ask the AI character anything
+  you can try it at quizly.pub/welcome — pick a contest entry, sign up, and ask
+  the AI character anything
 
 # CharacterAI / AI persona CTA — use for echo contest angle
 persona_cta: >
@@ -25,14 +33,15 @@ persona_cta: >
   vote on the best answers — try a live example at quizly.pub/welcome
 
 # Entertainment / fun CTA — use for animal, humour, pop-culture, meme,
-# "just for fun" contexts. Lead with play, not literature.
+# "just for fun" contexts. Lead with play, not literature. Write it in the
+# language of the thread (translate naturally for non-English threads).
 entertainment_cta: >
   there's a fun one where you chat with animal characters and people vote on the
-  funniest answers — you can try it free, no login, at quizly.pub/welcome/8
+  funniest answers — you can try it free at quizly.pub/welcome/8
 
 # ── Live welcome-page contest entries ─────────────────────────────────────────
 # Each entry is a deep-linkable demo (quizly.pub/welcome/<id>) the visitor can
-# interact with immediately, no login. The classifier picks the single most
+# interact with immediately. The classifier picks the single most
 # relevant entry for the CTA. "theme" drives matching; "lang" is the entry's
 # primary language; "vibe" is fun | light | classic | scene.
 welcome_contests:

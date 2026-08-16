@@ -129,35 +129,42 @@ def run_pipeline(
                 logger.warning("Failed to record spotted item '%s': %s", candidate.title[:60], exc)
     stats["spotted"] = len(spotted)
 
-    # ── 3. Pre-score and filter ────────────────────────────────────────────────
-    min_score = app_config.global_config.min_score if app_config else 10
-    min_comments = app_config.global_config.min_comments if app_config else 5
-
-    scored = scoring.score_and_filter(unique_candidates, min_score=min_score, min_comments=min_comments)
-    stats["after_filter"] = len(scored)
-    logger.info("After scoring/filter: %d candidates (from %d)", len(scored), len(unique_candidates))
-
-    # ── 4. Persist candidates ──────────────────────────────────────────────────
-    for candidate, _ in scored:
-        try:
-            db.upsert_candidate(db_path, candidate)
-        except Exception as exc:
-            logger.warning("Failed to upsert candidate '%s': %s", candidate.title[:60], exc)
-
-    # ── 5. Claude evaluation ───────────────────────────────────────────────────
+    # ── 3-6. Process candidates ────────────────────────────────────────────────
+    # Wrapped so that an unexpected failure here never skips rendering: the HTML
+    # report is ALWAYS regenerated after data is collected (see step 7).
     queued_count = 0
-    if not skip_claude:
-        queued_count = _evaluate_and_queue(scored, db_path, app_config, platforms_config)
-    else:
-        logger.info("Skipping Claude evaluation (skip_claude=True).")
+    try:
+        # ── 3. Pre-score and filter ────────────────────────────────────────────
+        min_score = app_config.global_config.min_score if app_config else 10
+        min_comments = app_config.global_config.min_comments if app_config else 5
+
+        scored = scoring.score_and_filter(unique_candidates, min_score=min_score, min_comments=min_comments)
+        stats["after_filter"] = len(scored)
+        logger.info("After scoring/filter: %d candidates (from %d)", len(scored), len(unique_candidates))
+
+        # ── 4. Persist candidates ──────────────────────────────────────────────
+        for candidate, _ in scored:
+            try:
+                db.upsert_candidate(db_path, candidate)
+            except Exception as exc:
+                logger.warning("Failed to upsert candidate '%s': %s", candidate.title[:60], exc)
+
+        # ── 5. Claude evaluation ───────────────────────────────────────────────
+        if not skip_claude:
+            queued_count = _evaluate_and_queue(scored, db_path, app_config, platforms_config)
+        else:
+            logger.info("Skipping Claude evaluation (skip_claude=True).")
+
+        # ── 6. Expire stale items ──────────────────────────────────────────────
+        stats["expired"] = opportunity_queue.expire_stale(db_path, ttl_hours=stale_ttl_hours)
+    except Exception as exc:
+        msg = f"Candidate processing failed: {exc}"
+        logger.error(msg)
+        stats["errors"].append(msg)
 
     stats["queued"] = queued_count
 
-    # ── 6. Expire stale items ──────────────────────────────────────────────────
-    expired = opportunity_queue.expire_stale(db_path, ttl_hours=stale_ttl_hours)
-    stats["expired"] = expired
-
-    # ── 7. Render HTML ─────────────────────────────────────────────────────────
+    # ── 7. Render HTML (always runs after collection) ──────────────────────────
     try:
         queue_items = opportunity_queue.get_review_inbox(db_path)
         summary = opportunity_queue.summarize(db_path)
